@@ -18,7 +18,7 @@ Partially Observable Stochastic Games".
 Data Types
 ==========
 
-### BeliefStateNode
+### BeliefState
 
 The basic node of state. It contains itself and a list of actions
 
@@ -27,14 +27,14 @@ The basic node of state. It contains itself and a list of actions
 An action is an interface. It can have an attached Runnable that will be executed
 if there is an activity to do.
 
-### StateNone
+### State
 
-A statenode represents a game state. It has a
+A State represents a game state. It has a
 
 License
 =======
 
-he MIT License (MIT)
+The MIT License (MIT)
 Copyright (c) 2013 Nicholas Wertzberger
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of

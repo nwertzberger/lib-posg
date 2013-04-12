@@ -1,5 +1,6 @@
 package com.ideaheap.libposg
 
+import com.ideaheap.libposg.agent.BackupOperator
 import org.junit.Test
 import com.ideaheap.libposg.state.BeliefState
 

@@ -1,12 +1,17 @@
 package com.ideaheap.libposg.state;
 
 /**
- * Created with IntelliJ IDEA.
  * User: nwertzberger
  * Date: 4/11/13
  * Time: 11:02 PM
- * To change this template use File | Settings | File Templates.
+ *
+ * An Observation is related to states and actions.
+ *
+ * "If you are in this state and doing this action, you will see X with this
+ * probability."
  */
 public class Observation {
+    public Observation(State s, Action a, Double probability) {
 
+    }
 }

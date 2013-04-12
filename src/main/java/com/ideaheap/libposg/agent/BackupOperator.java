@@ -1,4 +1,4 @@
-package com.ideaheap.libposg;
+package com.ideaheap.libposg.agent;
 
 /**
  * User: nwertzberger

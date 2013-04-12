@@ -9,7 +9,7 @@ package com.ideaheap.libposg.state;
  */
 public class Transition {
 
-    public Transition(StateNode n, Action a, Double probability) {
+    public Transition(State n, Action a, Double probability) {
 
     }
 }
