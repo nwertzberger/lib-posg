@@ -15,6 +15,22 @@ sourced.  The algorithm is based on the work of Eric A. Hansen, Daniel S.
 Bernstein and Shlomo Zilberstein  in "Dynamic Programming Approximations for
 Partially Observable Stochastic Games".
 
+Data Types
+==========
+
+### BeliefStateNode
+
+The basic node of state. It contains itself and a list of actions
+
+### Action
+
+An action is an interface. It can have an attached Runnable that will be executed
+if there is an activity to do.
+
+### StateNone
+
+A statenode represents a game state. It has a
+
 License
 =======
 
