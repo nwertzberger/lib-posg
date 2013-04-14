@@ -9,14 +9,12 @@ import java.util.Map;
  * Time: 10:18 PM
  */
 public class State {
-    private Map<State, Double> state;
+    private Map<Transition, Double> state;
 
-    public State(Map<State, Double> state) {
+    public State(Map<Transition, Double> transitions) {
         this.state = state;
     }
     public State() {
-        this.state = new HashMap<State, Double>();
+        this.state = new HashMap<Transition, Double>();
     }
-
-
 }

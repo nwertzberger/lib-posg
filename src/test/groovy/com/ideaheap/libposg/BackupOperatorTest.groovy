@@ -2,7 +2,6 @@ package com.ideaheap.libposg
 
 import com.ideaheap.libposg.agent.BackupOperator
 import org.junit.Test
-import com.ideaheap.libposg.state.BeliefState
 
 /**
  * Created with IntelliJ IDEA.
@@ -16,6 +15,5 @@ class BackupOperatorTest {
     @Test
     void canMaximizeActions() {
         BackupOperator oper = new BackupOperator();
-        BeliefState state = new BeliefState();
     }
 }
