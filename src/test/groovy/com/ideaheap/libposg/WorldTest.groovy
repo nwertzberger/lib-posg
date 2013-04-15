@@ -1,7 +1,7 @@
 package com.ideaheap.libposg
 
 import com.ideaheap.libposg.agent.Agent
-import com.ideaheap.libposg.simulator.World
+import com.ideaheap.libposg.simulator.Simulator
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -28,7 +28,7 @@ class WorldTest {
     @Test
     void canParseYamlFile() {
         InputStream domain = this.getClass().getClassLoader().getResourceAsStream("domain.yaml")
-        World world = new World(domain, agent)
+        Simulator world = new Simulator(domain, agent)
     }
 
     @Test
@@ -40,6 +40,6 @@ class WorldTest {
                 ONE:
                 TWO:
             """
-        World world = new World(data, agent);
+        Simulator world = new Simulator(data, agent);
     }
 }

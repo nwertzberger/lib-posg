@@ -5,8 +5,9 @@ package com.ideaheap.libposg.agent;
  * Date: 4/14/13
  * Time: 3:33 PM
  * Email: wertnick@gmail.com
- * <p/>
- * It looks like I forgot to explain this class.
+ *
+ * The agent is the interface that must be implemented for using the simulator.
  */
 public interface Agent {
+    public String getName();
 }
