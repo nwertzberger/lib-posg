@@ -3,6 +3,8 @@ package com.ideaheap.libposg.agent;
 import com.ideaheap.libposg.state.Action;
 import com.ideaheap.libposg.state.Observation;
 
+import java.util.Map;
+
 /**
  * User: nwertzberger
  * Date: 4/14/13
@@ -15,5 +17,12 @@ public interface Agent {
     public String getName();
 
     public Action getAction(String actionName);
+    public void addAction(Action action);
+
     public Observation getObservation(String observationName);
+    public void addObservation(Observation observation);
+
+    public void setHorizon(Integer horizon);
+
+    public void setBelief(Map<String,Double> belief);
 }
