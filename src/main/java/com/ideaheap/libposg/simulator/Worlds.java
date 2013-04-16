@@ -39,7 +39,7 @@ public class Worlds {
                 addJointAction(game, jointAction, agents, games);
             }
         }
-        return new World();
+        return new World().withGames(games);
     }
 
     /**
