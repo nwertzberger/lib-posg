@@ -1,6 +1,7 @@
 package com.ideaheap.libposg.simulator;
 
 import com.ideaheap.libposg.agent.Agent;
+import com.ideaheap.libposg.state.Game;
 
 import java.util.Collection;
 import java.util.Map;
@@ -16,11 +17,19 @@ import java.util.Map;
  */
 public class World {
 
-    public static World fromConfig(Map<String, Object> gameConfigurations) {
-        return new World();
-    }
 
     public void addAgents(Collection<Agent> agents) {
 
+    }
+
+    public void setGames(Map<String, Object> gameConfigs) {
+
+    }
+
+    public void step() {
+    }
+
+    public Map<String,Game> getGames() {
+        return null;
     }
 }

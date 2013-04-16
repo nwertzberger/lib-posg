@@ -1,5 +1,8 @@
 package com.ideaheap.libposg.agent;
 
+import com.ideaheap.libposg.state.Action;
+import com.ideaheap.libposg.state.Observation;
+
 /**
  * User: nwertzberger
  * Date: 4/14/13
@@ -10,4 +13,7 @@ package com.ideaheap.libposg.agent;
  */
 public interface Agent {
     public String getName();
+
+    public Action getAction(String actionName);
+    public Observation getObservation(String observationName);
 }

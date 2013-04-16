@@ -11,7 +11,9 @@ package com.ideaheap.libposg.state;
  * probability."
  */
 public class Observation {
-    public Observation(State s, Action a, Double probability) {
+    private String name;
 
+    public Observation(String name) {
+        this.name = name;
     }
 }

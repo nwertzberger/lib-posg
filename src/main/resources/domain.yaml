@@ -22,12 +22,15 @@ agents:
         belief:
             LD: 1.0
 
+startingGames:
+    agent1: LD
+
 games:
     # Clean states:
     LC:
         -   jointAction: {agent1: LEFT}
-            reward: {agent1: -0.1}
-            destStates:
+            rewards: {agent1: -0.1}
+            transitions:
                 LC: 
                     p: 0.8
                     observations: 
@@ -38,8 +41,8 @@ games:
                         agent1: { BUMP: 0.2, DIRTY: 0.2 }
 
         -   jointAction: {agent1: RIGHT}
-            reward: {agent1: -0.1}
-            destStates: 
+            rewards: {agent1: -0.1}
+            transitions:
                 LC: 
                     p: 0.2
                     observations: 
@@ -50,16 +53,16 @@ games:
                         agent1: { BUMP: 0.2, DIRTY: 0.2 }
 
         -   jointAction: {agent1: SUCK}
-            reward: {agent1: -0.1}
-            destStates: 
+            rewards: {agent1: -0.1}
+            transitions:
                 LC: 
                     p: 1.0 
                     observations:
                         agent1: { BUMP: 0.2, DIRTY: 0.2 }
     RC:
         -   jointAction: {agent1: LEFT}
-            reward: {agent1: -0.1}
-            destStates:
+            rewards: {agent1: -0.1}
+            transitions:
                 LC: 
                     p: 0.8
                     observations: 
@@ -70,8 +73,8 @@ games:
                         agent1: { BUMP: 0.8, DIRTY: 0.2 }
 
         -   jointAction: {agent1: RIGHT}
-            reward: {agent1: -0.1}
-            destStates: 
+            rewards: {agent1: -0.1}
+            transitions:
                 LC: 
                     p: 0.2
                     observations: 
@@ -82,8 +85,8 @@ games:
                         agent1: { BUMP: 0.8, DIRTY: 0.2 }
 
         -   jointAction: {agent1: SUCK}
-            reward: {agent1: -0.1}
-            destStates: 
+            rewards: {agent1: -0.1}
+            transitions:
                 RC: 
                     p: 1.0 
                     observations:
@@ -92,8 +95,8 @@ games:
     # Dirty States:
     LD:
         -   jointAction: {agent1: LEFT}
-            reward: {agent1: -0.1}
-            destStates:
+            rewards: {agent1: -0.1}
+            transitions:
                 LD: 
                     p: 0.8
                     observations: 
@@ -104,8 +107,8 @@ games:
                         agent1: { BUMP: 0.2, DIRTY: 0.8 }
 
         -   jointAction: {agent1: RIGHT}
-            reward: {agent1: -0.1}
-            destStates: 
+            rewards: {agent1: -0.1}
+            transitions:
                 LD: 
                     p: 0.2
                     observations: 
@@ -116,16 +119,16 @@ games:
                         agent1: { BUMP: 0.2, DIRTY: 0.8 }
 
         -   jointAction: {agent1: SUCK}
-            reward: {agent1: -0.1}
-            destStates: 
+            rewards: {agent1: -0.1}
+            transitions:
                 LD: 
                     p: 1.0 
                     observations:
                         agent1: { BUMP: 0.2, DIRTY: 0.2 }
     RD:
         -   jointAction: {agent1: LEFT}
-            reward: {agent1: -0.1}
-            destStates:
+            rewards: {agent1: -0.1}
+            transitions:
                 LD: 
                     p: 0.8
                     observations: 
@@ -136,8 +139,8 @@ games:
                         agent1: { BUMP: 0.8, DIRTY: 0.2 }
 
         -   jointAction: {agent1: RIGHT}
-            reward: {agent1: -0.1}
-            destStates: 
+            rewards: {agent1: -0.1}
+            transitions:
                 LD: 
                     p: 0.2
                     observations: 
@@ -148,8 +151,8 @@ games:
                         agent1: { BUMP: 0.8, DIRTY: 0.2 }
 
         -   jointAction: {agent1: SUCK}
-            reward: {agent1: 1.0}
-            destStates: 
+            rewards: {agent1: 1.0}
+            transitions:
                 RD: 
                     p: 0.2 
                     observations:

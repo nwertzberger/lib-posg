@@ -10,6 +10,11 @@ package com.ideaheap.libposg.state;
  */
 public class Action {
     private Runnable execution;
+    private String name;
+
+    public Action(String name) {
+        this.name = name;
+    }
 
     public Action withExecution(Runnable exec) {
         this.execution = exec;

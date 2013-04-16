@@ -2,10 +2,8 @@ package com.ideaheap.libposg.simulator;
 
 import com.ideaheap.libposg.agent.Agent;
 import org.yaml.snakeyaml.Yaml;
-import sun.plugin2.message.GetAppletMessage;
 
-import java.io.InputStream;
-import java.util.HashMap;
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -24,14 +22,12 @@ public class Simulator {
 
     public Simulator(String worldConfig) {
         Yaml yaml = new Yaml();
-        Map<String, Object> world = (Map<String, Object>) yaml.load(worldConfig);
-        parseWorld(world);
+        parseWorld((Map<String, Object>) yaml.load(worldConfig));
     }
 
     public Simulator(InputStream worldStream) {
         Yaml yaml = new Yaml();
-        Map<String, Object> world = (Map<String, Object>) yaml.load(worldStream);
-        parseWorld(world);
+        parseWorld((Map<String, Object>) yaml.load(worldStream));
     }
 
     // Used to build the world into a state space.
@@ -40,22 +36,32 @@ public class Simulator {
         Map<String, Object> agentConfigs = (Map<String, Object>) world.get("agents");
         Map<String, Object> gameConfigs = (Map<String, Object>) world.get("games");
 
-        this.world = World.fromConfig(gameConfigs);
-        this.world.addAgents(Agents
-            .fromConfig(agentConfigs)
-            .values()
+        this.world = Worlds.fromConfig(
+                gameConfigs,
+                Agents.fromConfig(agentConfigs)
         );
+    }
+
+    private void simulate() throws IOException {
+        String line;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        do {
+            world.step();
+            System.out.print(" > ");
+            line = reader.readLine();
+        } while(line != null && !line.contains("quit"));
+        reader.close();
     }
 
     public static void main(String [] argv) {
         Simulator s = new Simulator(Simulator.class
-            .getClassLoader()
-            .getResourceAsStream("domain.yaml")
+                .getClassLoader()
+                .getResourceAsStream("domain.yaml")
         );
-        s.simulate();
-    }
-
-    private void simulate() {
-        System.out.println("TODO");
+        try {
+            s.simulate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

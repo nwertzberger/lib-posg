@@ -1,5 +1,8 @@
 package com.ideaheap.libposg.agent;
 
+import com.ideaheap.libposg.state.Action;
+import com.ideaheap.libposg.state.Observation;
+
 /**
  * User: nwertzberger
  * Date: 4/14/13
@@ -18,5 +21,15 @@ public class HumanAgent implements Agent {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public Action getAction(String actionName) {
+        return new Action(actionName);
+    }
+
+    @Override
+    public Observation getObservation(String observationName) {
+        return new Observation(observationName);
     }
 }
