@@ -1,6 +1,7 @@
 package com.ideaheap.libposg.agent;
 
 import com.ideaheap.libposg.state.Action;
+import com.ideaheap.libposg.state.Game;
 import com.ideaheap.libposg.state.Observation;
 
 import java.util.Map;
@@ -23,6 +24,9 @@ public interface Agent {
     public void addObservation(Observation observation);
 
     public void setHorizon(Integer horizon);
-
     public void setBelief(Map<String,Double> belief);
+
+    public void observe(Observation o);
+    public Action decideGameAction();
+    public void setGames(Map<String,Game> games);
 }

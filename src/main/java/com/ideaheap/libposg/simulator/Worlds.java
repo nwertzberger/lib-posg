@@ -3,10 +3,7 @@ package com.ideaheap.libposg.simulator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.ideaheap.libposg.agent.Agent;
-import com.ideaheap.libposg.state.Action;
-import com.ideaheap.libposg.state.Game;
-import com.ideaheap.libposg.state.Observation;
-import com.ideaheap.libposg.state.Transition;
+import com.ideaheap.libposg.state.*;
 
 import java.util.*;
 
@@ -27,7 +24,7 @@ public class Worlds {
     public static World fromConfig(Map<String, Object> gameConfigurations, Map<String, Agent> agents) {
         Map<String, Game> games = new HashMap<String, Game>();
         for(String game: gameConfigurations.keySet()) {
-            games.put(game, new Game());
+            games.put(game, new Game(game));
         }
         // Get all the games
         for(String gameName: gameConfigurations.keySet()) {
@@ -39,7 +36,7 @@ public class Worlds {
                 addJointAction(game, jointAction, agents, games);
             }
         }
-        return new World().withGames(games);
+        return new World().withGames(games).withAgents(agents.values());
     }
 
     /**
@@ -55,7 +52,7 @@ public class Worlds {
     private static void addJointAction(Game game, Map<String, Object> config, Map<String, Agent> agents, Map<String, Game> games) {
         Map<Agent, Action> parsedJointAction = new HashMap<Agent, Action>();
         Map<Agent, Double> parsedRewards    = new HashMap<Agent, Double>();
-        Set<Transition> parsedTransitions   = new HashSet<Transition>();
+        Map<Transition, Double> parsedTransitions   = new HashMap<Transition, Double>();
 
         // Build the new joint action.
         Map<String, String> jointAction = (Map<String, String>) config.get("jointAction");
@@ -80,19 +77,20 @@ public class Worlds {
             Map<Agent, Map<Observation, Double>> observations = getObservations(
                     agentObservations,
                     agents);
-            parsedTransitions.add(
+            parsedTransitions.put(
                     new Transition(
                             games.get(destGame),
-                            probability,
                             ImmutableMap.copyOf(observations)
-                    )
+                    ),
+                    probability
             );
         }
 
-        game.addJointAction(
+        game.addJointAction(new JointAction(
                 ImmutableMap.copyOf(parsedJointAction),
                 ImmutableMap.copyOf(parsedRewards),
-                ImmutableSet.copyOf(parsedTransitions));
+                ImmutableMap.copyOf(parsedTransitions))
+        );
 
     }
 

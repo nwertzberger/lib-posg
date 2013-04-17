@@ -15,12 +15,10 @@ sourced.  The algorithm is based on the work of Eric A. Hansen, Daniel S.
 Bernstein and Shlomo Zilberstein  in "Dynamic Programming Approximations for
 Partially Observable Stochastic Games".
 
-Data Types
+Game Layout
 ==========
 
-### BeliefState
-
-The basic node of state. It contains itself and a list of actions
+The following datatypes are meant to be used to create a game description.
 
 ### Action
 
@@ -54,4 +52,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-

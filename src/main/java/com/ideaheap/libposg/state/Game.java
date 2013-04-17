@@ -4,19 +4,55 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.ideaheap.libposg.agent.Agent;
 
+import java.util.*;
+
 /**
  * User: nwertzberger
  * Date: 4/15/13
  * Time: 7:56 PM
  * Email: wertnick@gmail.com
  *
+ * A game is a set of joint actions that agents can take.
+ *
  */
 public class Game {
-    public void addJointAction(
-            ImmutableMap<Agent, Action> jointAction,
-            ImmutableMap<Agent, Double> rewards,
-            ImmutableSet<Transition> transitions) {
+    private Set<JointAction> jointActions = new HashSet<JointAction>();
 
+    private String name;
 
+    public Game(String name) {
+        this.name = name;
+    }
+
+    public void addJointAction(JointAction action) {
+        jointActions.add(action);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Game game = (Game) o;
+        if (jointActions != null
+                ? !jointActions.equals(game.jointActions)
+                : game.jointActions != null)
+            return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return jointActions != null ? jointActions.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return "{" + jointActions + "}";
     }
 }

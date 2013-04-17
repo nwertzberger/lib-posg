@@ -16,7 +16,6 @@ import java.util.*;
  */
 public class World {
 
-
     private Set<Agent> agents = new HashSet<Agent>();
     private Map<String, Game> games = new HashMap<String, Game>();
 
@@ -33,6 +32,11 @@ public class World {
 
     public World withGames(Map<String, Game> games) {
         this.games = games;
+        return this;
+    }
+
+    public World withAgents(Collection<Agent> agents) {
+        addAgents(agents);
         return this;
     }
 
@@ -59,9 +63,10 @@ public class World {
     @Override
     public String toString() {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("TODO");
-        buffer.append(agents.size() + " Agents");
-        buffer.append(games.size() + " Games");
+        buffer.append("{");
+        buffer.append("agents:" + agents);
+        buffer.append(", games:" + games);
+        buffer.append("}");
         return buffer.toString();
     }
 

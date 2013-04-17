@@ -16,8 +16,6 @@ import java.util.Map;
  */
 @SuppressWarnings("unchecked")
 public class Simulator {
-
-    private Map<String, Agent> activeAgents;
     private World world;
 
     public Simulator(String worldConfig) {
@@ -53,11 +51,17 @@ public class Simulator {
         reader.close();
     }
 
+    @Override
+    public String toString() {
+        return "{world:" + world + "}";
+    }
+
     public static void main(String [] argv) {
         Simulator s = new Simulator(Simulator.class
                 .getClassLoader()
                 .getResourceAsStream("domain.yaml")
         );
+        System.out.println("Simulator:" + s);
         try {
             s.simulate();
         } catch (IOException e) {
