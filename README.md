@@ -15,19 +15,44 @@ sourced.  The algorithm is based on the work of Eric A. Hansen, Daniel S.
 Bernstein and Shlomo Zilberstein  in "Dynamic Programming Approximations for
 Partially Observable Stochastic Games".
 
-Game Layout
+Defining a Game
 ==========
 
 The following datatypes are meant to be used to create a game description.
 
 ### Action
 
-An action is an interface. It can have an attached Runnable that will be executed
-if there is an activity to do.
+An agent is capable of doing actions. Actions are how an agent interacts
+with the world. After an action has been defined for an agent, that same
+object must be used whenever a reference to an action is required.
 
-### State
+### Game
 
-A State represents a game state. It has a
+A game is really a set of JointActions. It is a holding datatype, but
+represents the destination Game to be used for other locations. Like
+Actions, once a game has been created, the same reference should always
+be used.
+
+The assumption is made that you have a JointAction for every possible
+combination of Agent Actions.
+
+### JointAction
+
+A JointAction represents the mapping of agent actions to agent rewards
+as well as the potential transitions to another state from this action.
+
+You will add a lot of these.
+
+### Transition
+
+Transitions show what destination state can be reached, and what probable
+observations would be made if it is the current transition.
+
+### Observation
+
+Observations are used by an agent to sense its current state. These should
+be tied to the agent using the observation. The same object should be passed
+to every JointAction.
 
 License
 =======

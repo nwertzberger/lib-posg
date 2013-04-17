@@ -1,5 +1,7 @@
 package com.ideaheap.libposg.state;
 
+import java.util.concurrent.Callable;
+
 /**
  * User: nwertzberger
  * Date: 4/11/13
@@ -12,6 +14,7 @@ package com.ideaheap.libposg.state;
  */
 public class Observation {
     private String name;
+    private Callable<Boolean> process = null;
 
     public Observation(String name) {
         this.name = name;
@@ -19,6 +22,11 @@ public class Observation {
 
     public String getName() {
         return name;
+    }
+
+    public Observation withProcess(Callable<Boolean> process) {
+        this.process = process;
+        return this;
     }
 
     @Override
@@ -38,7 +46,7 @@ public class Observation {
         return name != null ? name.hashCode() : 0;
     }
 
-
+    @Override
     public String toString() {
         return "{" + name + "}";
     }
