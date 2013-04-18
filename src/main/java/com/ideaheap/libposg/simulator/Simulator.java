@@ -1,10 +1,10 @@
 package com.ideaheap.libposg.simulator;
 
-import com.ideaheap.libposg.agent.Agent;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.Map;
+import java.util.Scanner;
 
 /**
  * User: nwertzberger
@@ -33,22 +33,23 @@ public class Simulator {
     private void parseWorld(Map<String, Object> world) {
         Map<String, Object> agentConfigs = (Map<String, Object>) world.get("agents");
         Map<String, Object> gameConfigs = (Map<String, Object>) world.get("games");
+        String startingGame = (String) world.get("startingGame");
 
         this.world = Worlds.fromConfig(
                 gameConfigs,
                 Agents.fromConfig(agentConfigs)
-        );
+        ).withStartingGame(startingGame);
     }
 
-    private void simulate() throws IOException {
+    private void simulate() {
         String line;
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         do {
             world.step();
+            System.out.println("(actual state = " + world.getCurrentGame().getName() + ")");
+            Scanner scan = new Scanner(System.in);
             System.out.print(" > ");
-            line = reader.readLine();
+            line = scan.nextLine();
         } while(line != null && !line.contains("quit"));
-        reader.close();
     }
 
     @Override
@@ -62,10 +63,6 @@ public class Simulator {
                 .getResourceAsStream("domain.yaml")
         );
         System.out.println("Simulator:" + s);
-        try {
-            s.simulate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        s.simulate();
     }
 }

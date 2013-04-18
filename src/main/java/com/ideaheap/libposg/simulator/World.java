@@ -1,7 +1,8 @@
 package com.ideaheap.libposg.simulator;
 
+import com.google.common.collect.ImmutableMap;
 import com.ideaheap.libposg.agent.Agent;
-import com.ideaheap.libposg.state.Game;
+import com.ideaheap.libposg.state.*;
 
 import java.util.*;
 
@@ -18,12 +19,44 @@ public class World {
 
     private Set<Agent> agents = new HashSet<Agent>();
     private Map<String, Game> games = new HashMap<String, Game>();
+    private Game currentGame = null;
+
+    /*
+     *  Statistical stuff
+     */
+    private Map<Agent,Double> actualReward = new HashMap<Agent, Double>();
 
     public void addAgents(Collection<Agent> agents) {
         this.agents.addAll(agents);
     }
 
     public void step() {
+        // Calculate the joint action
+        Map<Agent, Action> agentActions = new HashMap<Agent, Action>();
+        for (Agent agent : agents) {
+            agentActions.put(agent, agent.decideGameAction());
+        }
+        JointAction jointAction = currentGame.getJointAction(agentActions);
+
+        // Determine reward
+        Map<Agent, Double> rewards = jointAction.getAgentRewards();
+        for (Agent agent: rewards.keySet()) {
+            actualReward.put(agent, rewards.get(agent));
+        }
+
+        // Determine the transition
+        Transition t = jointAction.determineTransition();
+        for (Agent a: agents) {
+            Map<Observation,Double> observationProbabilities = t.getAgentObservations(a);
+            Set<Observation> observations = new HashSet<Observation>();
+            for (Observation ob: observationProbabilities.keySet()) {
+                if (Math.random() < observationProbabilities.get(ob)) {
+                    observations.add(ob);
+                }
+            }
+            a.observe(observations);
+        }
+        this.currentGame = t.getGame();
     }
 
     public Map<String,Game> getGames() {
@@ -70,4 +103,12 @@ public class World {
         return buffer.toString();
     }
 
+    public World withStartingGame(String startingGame) {
+        this.currentGame = games.get(startingGame);
+        return this;
+    }
+
+    public Game getCurrentGame() {
+        return currentGame;
+    }
 }

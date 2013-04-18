@@ -3,6 +3,7 @@ package com.ideaheap.libposg.state;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.ideaheap.libposg.agent.Agent;
+import com.ideaheap.libposg.simulator.PosgSimulatorException;
 
 /**
  * User: nwertzberger
@@ -18,6 +19,13 @@ public class JointAction {
     private final ImmutableMap<Agent, Double> agentRewards;
     private final ImmutableMap<Transition, Double> transitions;
 
+    /**
+     *
+     * @param agentActions
+     * @param agentRewards
+     * @param transitions
+     * The set of transitions and their probabilities of occurring,  Adding to 1.
+     */
     public JointAction(
             ImmutableMap<Agent, Action> agentActions,
             ImmutableMap<Agent, Double> agentRewards,
@@ -49,5 +57,24 @@ public class JointAction {
     public String toString(){
         return "{" + agentActions + " => Reward:" + agentRewards +
                 ", transitions:" + transitions + "}";
+    }
+
+    public ImmutableMap<Agent, Action> getAgentActions() {
+        return agentActions;
+    }
+
+    public ImmutableMap<Agent, Double> getAgentRewards() {
+        return agentRewards;
+    }
+
+    public Transition determineTransition() {
+        Double choice = Math.random();
+        for (Transition t: transitions.keySet()) {
+            Double p = transitions.get(t);
+            if (choice < p)
+                return t;
+            choice -= p;
+        }
+        throw new RuntimeException("Transition probabilities must add up to 1");
     }
 }

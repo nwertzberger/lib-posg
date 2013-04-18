@@ -1,12 +1,9 @@
 package com.ideaheap.libposg.state;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.ideaheap.libposg.agent.Agent;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created with IntelliJ IDEA.
@@ -17,25 +14,18 @@ import java.util.Set;
  */
 public class Transition {
 
-    private final Game destGame;
+    private final Game game;
     private final ImmutableMap<Agent, Map<Observation, Double>> observations;
 
     public Transition(
             Game destGame,
             ImmutableMap<Agent, Map<Observation, Double>> observations) {
-        this.destGame = destGame;
+        this.game = destGame;
         this.observations = observations;
     }
 
-    public Set<Observation> getAgentObservations(Agent agent) {
-        Set<Observation> observations = new HashSet<Observation>();
-        Map<Observation,Double> observationProbabilities = this.observations.get(agent);
-        for (Observation ob : observationProbabilities.keySet()) {
-            if (Math.random() < observationProbabilities.get(ob)) {
-                observations.add(ob);
-            }
-        }
-        return observations;
+    public Map<Observation, Double> getAgentObservations(Agent agent) {
+        return this.observations.get(agent);
     }
 
     @Override
@@ -45,7 +35,7 @@ public class Transition {
 
         Transition that = (Transition) o;
         // One of the uses of == on purpose
-        if (destGame != that.destGame) return false;
+        if (game != that.game) return false;
         if (observations != null ? !observations.equals(that.observations) : that.observations != null) return false;
 
         return true;
@@ -53,13 +43,17 @@ public class Transition {
 
     @Override
     public int hashCode() {
-        int result = (destGame != null ? destGame.getName().hashCode() : 0);
+        int result = (game != null ? game.getName().hashCode() : 0);
         result = 31 * result + (observations != null ? observations.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "{observes " + observations + " and transitions to " + destGame.getName() + "}";
+        return "{observes " + observations + " and transitions to " + game.getName() + "}";
+    }
+
+    public Game getGame() {
+        return game;
     }
 }

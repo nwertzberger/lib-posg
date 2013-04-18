@@ -22,8 +22,7 @@ agents:
         belief:
             LD: 1.0
 
-startingGames:
-    agent1: LD
+startingGame: LD
 
 games:
     # Clean states:

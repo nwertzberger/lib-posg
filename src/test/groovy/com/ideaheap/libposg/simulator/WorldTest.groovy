@@ -22,7 +22,5 @@ class WorldTest {
                 ]
             ]
         ]);
-
-        assert world.getGames().size() == 1
     }
 }

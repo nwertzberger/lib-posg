@@ -3,16 +3,8 @@ package com.ideaheap.libposg.agent;
 import com.ideaheap.libposg.state.Action;
 import com.ideaheap.libposg.state.Game;
 import com.ideaheap.libposg.state.Observation;
-import sun.security.pkcs11.wrapper.CK_SSL3_KEY_MAT_OUT;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * User: nwertzberger
@@ -35,22 +27,21 @@ public class HumanAgent implements Agent {
     }
 
     @Override
-    public void observe(Observation o) {
-        System.out.println("You observed " + o + "!");
+    public void observe(Set<Observation> observations) {
+        for (Observation ob : observations) {
+            System.out.println("You observed " + ob + "!");
+        }
     }
 
     @Override
     public Action decideGameAction() {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Action? " + actions.keySet() + " > ");
-        String chosenAction = null;
-        try {
-            chosenAction = reader.readLine().trim();
-            reader.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+        Action chosenAction = null;
+        Scanner scan = new Scanner(System.in);
+        while (chosenAction == null) {
+            chosenAction = actions.get(scan.nextLine().trim());
         }
-        return chosenAction == null ? null : actions.get(chosenAction);
+        return chosenAction;
     }
 
     @Override
@@ -65,7 +56,6 @@ public class HumanAgent implements Agent {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         HumanAgent that = (HumanAgent) o;
 
         if (actions != null ? !actions.equals(that.actions) : that.actions != null) return false;

@@ -16,7 +16,7 @@ import java.util.*;
  *
  */
 public class Game {
-    private Set<JointAction> jointActions = new HashSet<JointAction>();
+    private Map<ImmutableMap<Agent, Action>, JointAction> jointActions = new HashMap<ImmutableMap<Agent, Action>, JointAction>();
 
     private String name;
 
@@ -25,7 +25,7 @@ public class Game {
     }
 
     public void addJointAction(JointAction action) {
-        jointActions.add(action);
+        jointActions.put(action.getAgentActions(), action);
     }
 
     public String getName() {
@@ -54,5 +54,9 @@ public class Game {
     @Override
     public String toString() {
         return "{" + jointActions + "}";
+    }
+
+    public JointAction getJointAction(Map<Agent, Action> agentActions) {
+        return jointActions.get(ImmutableMap.copyOf(agentActions));
     }
 }

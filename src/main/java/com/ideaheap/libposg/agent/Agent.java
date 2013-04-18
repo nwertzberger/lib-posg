@@ -5,6 +5,7 @@ import com.ideaheap.libposg.state.Game;
 import com.ideaheap.libposg.state.Observation;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * User: nwertzberger
@@ -26,7 +27,7 @@ public interface Agent {
     public void setHorizon(Integer horizon);
     public void setBelief(Map<String,Double> belief);
 
-    public void observe(Observation o);
+    public void observe(Set<Observation> o);
     public Action decideGameAction();
     public void setGames(Map<String,Game> games);
 }
