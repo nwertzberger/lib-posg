@@ -1,10 +1,12 @@
 package com.ideaheap.libposg.simulator;
 
+import com.ideaheap.libposg.agent.Agent;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 /**
  * User: nwertzberger
@@ -35,10 +37,14 @@ public class Simulator {
         Map<String, Object> gameConfigs = (Map<String, Object>) world.get("games");
         String startingGame = (String) world.get("startingGame");
 
+        Map<String, Agent> agents = Agents.fromConfig(agentConfigs);
         this.world = Worlds.fromConfig(
-                gameConfigs,
-                Agents.fromConfig(agentConfigs)
+                gameConfigs, agents
         ).withStartingGame(startingGame);
+
+        for (Agent agent : agents.values()) {
+            agent.setGames(this.world.getGames());
+        }
     }
 
     private void simulate() {

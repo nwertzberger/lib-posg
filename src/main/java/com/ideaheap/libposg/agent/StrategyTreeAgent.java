@@ -12,8 +12,13 @@ import java.util.Set;
  * Date: 4/17/13
  * Time: 8:49 PM
  * Email: wertnick@gmail.com
+ *
+ * This class generates a tree of horizon depth based on the current belief.
+ *
  */
 public class StrategyTreeAgent extends Agent {
+
+    private Set<Observation> observations = null;
 
     public StrategyTreeAgent(String name) {
         this.setName(name);
@@ -21,6 +26,7 @@ public class StrategyTreeAgent extends Agent {
 
     @Override
     public void observe(Set<Observation> o) {
+        observations = o;
     }
 
     @Override

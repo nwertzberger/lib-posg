@@ -2,6 +2,7 @@ package com.ideaheap.libposg.simulator;
 
 import com.ideaheap.libposg.agent.Agent;
 import com.ideaheap.libposg.agent.HumanAgent;
+import com.ideaheap.libposg.agent.StrategyTreeAgent;
 import com.ideaheap.libposg.state.Action;
 import com.ideaheap.libposg.state.Observation;
 
@@ -34,7 +35,7 @@ public class Agents {
         if (agentName.endsWith("Human"))
             agent = new HumanAgent(agentName);
         else
-            agent = new HumanAgent(agentName); // TODO
+            agent = new StrategyTreeAgent(agentName);
 
         for (String action: (List<String>) agentConf.get("actions")) {
             agent.addAction(new Action(action));
