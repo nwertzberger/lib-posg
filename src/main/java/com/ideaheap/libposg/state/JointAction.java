@@ -5,6 +5,8 @@ import com.google.common.collect.ImmutableSet;
 import com.ideaheap.libposg.agent.Agent;
 import com.ideaheap.libposg.simulator.PosgSimulatorException;
 
+import java.util.Map;
+
 /**
  * User: nwertzberger
  * Date: 4/16/13
@@ -35,6 +37,16 @@ public class JointAction {
         this.transitions = transitions;
     }
 
+    public JointAction(
+            Map<Agent, Action> agentActions,
+            Map<Agent, Double> agentRewards,
+            Map<Transition, Double> transitions) {
+        this(
+            ImmutableMap.copyOf(agentActions),
+            ImmutableMap.copyOf(agentRewards),
+            ImmutableMap.copyOf(transitions)
+        );
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

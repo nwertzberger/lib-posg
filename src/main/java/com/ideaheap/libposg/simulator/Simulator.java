@@ -1,6 +1,7 @@
 package com.ideaheap.libposg.simulator;
 
 import com.ideaheap.libposg.agent.Agent;
+import com.ideaheap.libposg.agent.AgentException;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -44,10 +45,11 @@ public class Simulator {
 
         for (Agent agent : agents.values()) {
             agent.setGames(this.world.getGames());
+            agent.generateStrategy();
         }
     }
 
-    private void simulate() {
+    private void simulate() throws AgentException {
         String line;
         do {
             world.step();
@@ -69,6 +71,10 @@ public class Simulator {
                 .getResourceAsStream("domain.yaml")
         );
         System.out.println("Simulator:" + s);
-        s.simulate();
+        try {
+            s.simulate();
+        } catch (AgentException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -54,6 +54,26 @@ Observations are used by an agent to sense its current state. These should
 be tied to the agent using the observation. The same object should be passed
 to every JointAction.
 
+Assumptions
+===========
+
+Some assumptions made in this version:
+
+Every game has every joint action of every agent participating. The actions are defined
+inside of the agent, and these actions are used in every game.
+
+Agents will always move in the pure strategy best response based on observations.
+* If there are two equally valued strategies, they will be chosen randomly.
+
+Internals
+=========
+
+This algorithm works by generating a horizon "X" policy tree for the agent given the current
+belief state each time generateStrategy is called. After generating the policy tree to use,
+calling decideGameAction will cause the agent to traverse the generated policy tree until it hits
+the edge. If generateStrategy is never called, it is automatically called when an agent hits an
+"edge node" on its policy tree.
+
 License
 =======
 

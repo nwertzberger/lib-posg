@@ -2,6 +2,7 @@ package com.ideaheap.libposg.simulator;
 
 import com.google.common.collect.ImmutableMap;
 import com.ideaheap.libposg.agent.Agent;
+import com.ideaheap.libposg.agent.AgentException;
 import com.ideaheap.libposg.state.*;
 
 import java.util.*;
@@ -30,7 +31,7 @@ public class World {
         this.agents.addAll(agents);
     }
 
-    public void step() {
+    public void step() throws AgentException {
         // Calculate the joint action
         Map<Agent, Action> agentActions = new HashMap<Agent, Action>();
         for (Agent agent : agents) {

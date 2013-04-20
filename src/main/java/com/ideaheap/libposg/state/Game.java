@@ -3,6 +3,7 @@ package com.ideaheap.libposg.state;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.ideaheap.libposg.agent.Agent;
+import com.ideaheap.libposg.agent.StrategyTreeAgent;
 
 import java.util.*;
 
@@ -26,6 +27,11 @@ public class Game {
 
     public void addJointAction(JointAction action) {
         jointActions.put(action.getAgentActions(), action);
+    }
+
+    public Game withJointAction(JointAction action) {
+        addJointAction(action);
+        return this;
     }
 
     public String getName() {
@@ -57,6 +63,16 @@ public class Game {
     }
 
     public JointAction getJointAction(Map<Agent, Action> agentActions) {
-        return jointActions.get(ImmutableMap.copyOf(agentActions));
+        return agentActions == null ?  null : jointActions.get(ImmutableMap.copyOf(agentActions));
+    }
+
+    public Set<JointAction> getJointActionsWithAgentAction(Agent agent, Action action) {
+        Set<JointAction> actions = new HashSet<JointAction>();
+        for (JointAction a : actions) {
+            if (a.getAgentActions().get(agent) == action) {
+                actions.add(a);
+            }
+        }
+        return actions;
     }
 }

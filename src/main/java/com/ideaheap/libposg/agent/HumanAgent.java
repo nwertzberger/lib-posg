@@ -1,6 +1,7 @@
 package com.ideaheap.libposg.agent;
 
 import com.ideaheap.libposg.state.Action;
+import com.ideaheap.libposg.state.Game;
 import com.ideaheap.libposg.state.Observation;
 
 import java.util.*;
@@ -30,9 +31,15 @@ public class HumanAgent extends Agent {
         Action chosenAction = null;
         Scanner scan = new Scanner(System.in);
         while (chosenAction == null) {
-            System.out.print("Action? " + actions.keySet() + " > ");
-            chosenAction = actions.get(scan.nextLine().trim());
+            System.out.print("Action? " + getActions().keySet() + " > ");
+            chosenAction = getActions().get(scan.nextLine().trim());
         }
         return chosenAction;
     }
+
+    @Override
+    public void onGenerateStrategy(Map<String, Game> games, Map<String, Double> belief, Integer horizon) {
+        System.out.println("Please generate your strategy");
+    }
+
 }

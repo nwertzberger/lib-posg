@@ -19,17 +19,25 @@ import java.util.Set;
 public abstract class Agent {
 
     private String name;
-    protected Map<String, Action> actions = new HashMap<String, Action>();
+    private Map<String, Action> actions = new HashMap<String, Action>();
     private Map<String, Observation> observations = new HashMap<String, Observation>();
     private Integer horizon;
     private Map<String, Double> belief;
     private Map<String, Game> games;
 
     public abstract void observe(Set<Observation> observations);
-    public abstract Action decideGameAction();
+    public abstract Action decideGameAction() throws AgentException;
+    public abstract void onGenerateStrategy(
+            Map<String, Game> games,
+            Map<String, Double> belief,
+            Integer horizon);
 
     public void setGames(Map<String, Game> games) {
         this.games = games;
+    }
+
+    public Map<String,Action> getActions() {
+        return actions;
     }
 
     public Agent withHorizon(int h) {
@@ -123,4 +131,8 @@ public abstract class Agent {
         return games;
     }
 
+
+    public void generateStrategy() {
+        onGenerateStrategy(games, belief, horizon);
+    }
 }

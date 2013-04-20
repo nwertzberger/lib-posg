@@ -24,6 +24,11 @@ public class Transition {
         this.observations = observations;
     }
 
+    public Transition(
+            Game destGame,
+            Map<Agent, Map<Observation, Double>> observations) {
+        this(destGame, ImmutableMap.copyOf(observations));
+    }
     public Map<Observation, Double> getAgentObservations(Agent agent) {
         return this.observations.get(agent);
     }
