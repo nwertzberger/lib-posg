@@ -69,6 +69,10 @@ public class StrategyTreeAgent extends Agent {
      * 1: Normalize incoming belief vector
      * 2: Find best action available. For all actions:
      *      2.1. For all games:
+     *          a. for all observations
+     *              i. Update belief for this.
+     *      2.2. Normalize all action - observation combo beliefs.
+     *      2.3. For all games:
      *          a. Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
      *          b. Calculate the new belief vector based on this action. (b^a)
      *          c. Go through every possible observation
@@ -92,9 +96,20 @@ public class StrategyTreeAgent extends Agent {
 
         // For all actions:
         for (Action a : this.getActions().values()) {
+
+            // Store b(a,o).  a is constant, so this will be implicit.
+            Map<Observation, Map<Game, Double>> observationBeliefs = generateActionObservationBeliefs(belief, a);
+
+            // Task 2.2: Normalize discovered beliefs
+            for (Map<Game, Double> b: observationBeliefs.values()) {
+                normalizeBelief(b);
+            }
+
+            // Task 2.3: Maximize and recurse.
             for (Game g : belief.keySet()) {
-                // Calculate action value given ourbelief state.
                 Double currBelief = belief.get(g);
+
+                // Calculate action value given ourbelief state.
                 JointAction jointAction = g.getBestResponseJointAction(this, a);
                 Double currReward = jointAction.getAgentRewards().get(this);
 
@@ -103,14 +118,48 @@ public class StrategyTreeAgent extends Agent {
                 // P(s'|a,s), P(o|s',a,s)
                 for (Transition t : jointAction.getTransitions().keySet()) {
                     Double transitionProbability = jointAction.getTransitions().get(t); // P(s'|a,s)
-
                     // generate a new belief state based on our actions and observations up to here.
                     Map<Game, Double> newBelief = new HashMap<Game, Double>(belief);
+
                 }
             }
         }
 
         return node;
+    }
+
+    private Map<Observation, Map<Game, Double>> generateActionObservationBeliefs(Map<Game, Double> belief, Action a, Map<Observation) {
+        Map<Observation, Map<Game, Double>> observationBeliefs = new HashMap<Observation, Map<Game, Double>>();
+        // Task 2.1: find the correct beliefs moving forward.
+        // We already know the action
+        for (Game currGame : belief.keySet()) {
+            Double currBelief = belief.get(currGame);
+            JointAction jointAction = currGame.getBestResponseJointAction(this, a);
+
+            // Transitions map destination games to actions... We need the reverse.
+            for (Transition t : jointAction.getTransitions().keySet()) {
+
+                Double actionTransitionProbability = jointAction.getTransitions().get(t); // P(s'|a,s)
+                Game destGame = t.getDestGame();
+
+                // b(a,o) = SUM_{s \in S} b * P(s',s|a,o)
+                for (Observation o: t.getAgentObservationProbabilities(this).keySet()) {
+                    Double observationProbability = t.getAgentObservationProbabilities(this).get(o);
+                    // First time
+                    if (!observationBeliefs.containsKey(o)) {
+                        observationBeliefs.put(o, new HashMap<Game, Double>());
+                    }
+                    if (!observationBeliefs.get(o).containsKey(destGame)) {
+                        observationBeliefs.get(o).put(destGame, 0d);
+                    }
+
+                    Double accBelief = observationBeliefs.get(o).get(destGame);
+                    Double nextBelief = currBelief * actionTransitionProbability * observationProbability;
+                    observationBeliefs.get(o).put(destGame, accBelief + nextBelief);
+                }
+            }
+        }
+        return observationBeliefs;
     }
 
     public void normalizeBelief(Map<Game, Double> belief) {

@@ -1,6 +1,5 @@
 package com.ideaheap.libposg.simulator;
 
-import com.google.common.collect.ImmutableMap;
 import com.ideaheap.libposg.agent.Agent;
 import com.ideaheap.libposg.agent.AgentException;
 import com.ideaheap.libposg.state.*;
@@ -57,7 +56,7 @@ public class World {
             }
             a.observe(observations);
         }
-        this.currentGame = t.getGame();
+        this.currentGame = t.getDestGame();
     }
 
     public Map<String,Game> getGames() {
