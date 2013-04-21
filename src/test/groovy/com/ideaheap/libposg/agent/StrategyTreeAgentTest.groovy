@@ -8,6 +8,8 @@ import com.ideaheap.libposg.state.Transition
 import org.junit.Before
 import org.junit.Test
 
+import static junit.framework.Assert.assertEquals
+
 /**
  *  User: nwertzberger
  *  Date: 4/20/13
@@ -18,7 +20,7 @@ import org.junit.Test
  */
 class StrategyTreeAgentTest {
 
-    Agent agent;
+    StrategyTreeAgent agent;
 
     @Before
     void setUp() {
@@ -30,7 +32,7 @@ class StrategyTreeAgentTest {
     @Test
     public void onlyOneGameChoice() {
         Game game = new Game("G1");
-        game.addJointAction(generateSingleAgentJointAction("JUMP",1.0d,game));
+        game.addJointAction(generateSingleAgentJointAction("JUMP", 1.0d, game));
         agent.onGenerateStrategy([G1: game], [G1: 1.0], 1)
         assert agent.decideGameAction() == agent.getAction("JUMP")
     }
@@ -57,5 +59,14 @@ class StrategyTreeAgentTest {
                 agentPayoff as Map<Agent, Double>,
                 transitions as Map<Transition, Double>
         )
+    }
+
+    @Test
+    void canNormalizeMap() {
+        def stuff = [:]
+        stuff[new Game("G1")] = 0.2d
+        stuff[new Game("G2")] = 0.3d
+        agent.normalizeBelief(stuff)
+        assertEquals(stuff.inject(0d) { acc, k, v -> acc + v} as Double, 1.0d, Double.MIN_VALUE)
     }
 }

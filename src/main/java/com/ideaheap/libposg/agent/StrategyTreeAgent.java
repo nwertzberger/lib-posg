@@ -18,6 +18,8 @@ import java.util.Set;
  *
  * This class generates a tree of horizon depth based on the current belief.
  *
+ * THIS ALL IS POORLY ARCHITECTED
+ *
  */
 public class StrategyTreeAgent extends Agent {
     private static final Double EPSILON = Double.MIN_VALUE;
@@ -36,13 +38,10 @@ public class StrategyTreeAgent extends Agent {
     public Action decideGameAction() throws AgentException {
         if (policy == null) this.generateStrategy();
         if (policy == null) throw new AgentException("Could not generate new policy");
-        return this.policy.action;
+        return this.policy.getAction();
     }
 
     /**
-     * An implementation of:
-     *
-     *
      * @param games
      * @param beliefMap
      * @param horizon
@@ -58,38 +57,54 @@ public class StrategyTreeAgent extends Agent {
         for (String gameName : beliefMap.keySet()) {
             belief.put(games.get(gameName), beliefMap.get(gameName));
         }
-        this.policy = generatePolicyTreeNode(belief);
+        this.policy = generatePolicyTreeNode(belief, horizon);
     }
 
-    PolicyTreeNode generatePolicyTreeNode(Map<Game, Double> belief) {
-        Set<Action> bestActions = new HashSet<Action>();
-        Double bestReward = null;
+    /**
+     * Depth (horizon) limited search of actions and observations to generate
+     * Expected values for different sets of belief.
+     *
+     * s = the current game
+     * a = the action
+     * o = the observation
+     * P(,) = probability
+     * R(,) = reward
+     *
+     * 0: if horizon = 0, return null
+     * 1: Normalize incoming belief vector
+     * 2: Find best action available. For all actions:
+     *      a. Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
+     *      b. Calculate the new belief vector based on this action. (b^a)
+     *      c. Go through every possible observation
+     *           i. calculate the probability of this observation (P(o|s,a)). HOLD ON TO THIS
+     *           ii. calculate a new belief vector based on this operation.
+     *           iii. call this function at step 0, using our new belief vector and horizon - 1.
+     *      d. Test to see if action is worth saving. If not, trash it.
+     *
+     *
+     * @param belief
+     * @param horizon
+     * @return
+     */
+    PolicyTreeNode generatePolicyTreeNode(Map<Game, Double> belief, int horizon) {
 
-        // Figure out our best move.
+        // Task 0: early quit
+        if (horizon == 0) return null;
+
+        // Task 1: normalize
+        normalizeBelief(belief);
+
+        // Task 2: find the best actions
         PolicyTreeNode node = new PolicyTreeNode();
-        for (Action a : getActions().values()) {
-            Double reward = getActionExpectedPayoff(a, belief);
-            if (bestReward == null || reward >= bestReward - EPSILON) {
-                if (bestReward == null || reward > bestReward + EPSILON) {
-                    bestReward = reward;
-                    bestActions = new HashSet<Action>();
-                }
-                bestActions.add(a);
-            }
-        }
-
-
+        for (Action a : )
 
         return node;
     }
 
-    Double getActionExpectedPayoff(Action a, Map<Game, Double> belief) {
-        Double expectedPayoff = 0.0;
-        for (Game g : belief.keySet()) {
-            Double currentBelief = belief.get(g);
-            Set<JointAction> actions = g.getJointActionsWithAgentAction(this, a);
-        }
-        return expectedPayoff;
+    public void normalizeBelief(Map<Game, Double> belief) {
+        Double total = 0.0;
+        for (Double bi : belief.values()) total += bi;
+        for (Game g : belief.keySet()) belief.put(g,belief.get(g) / total);
     }
 
 }

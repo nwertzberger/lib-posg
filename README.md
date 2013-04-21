@@ -57,10 +57,12 @@ to every JointAction.
 Assumptions
 ===========
 
-Some assumptions made in this version:
+Some assumptions made:
 
 Every game has every joint action of every agent participating. The actions are defined
-inside of the agent, and these actions are used in every game.
+inside of the agent, and these actions are used in every game. It's orthogonal.
+This is really the only way any agent can survive in a pOSG, as we really don't know
+exactly which game we are playing at any given time.
 
 Agents will always move in the pure strategy best response based on observations.
 * If there are two equally valued strategies, they will be chosen randomly.
@@ -72,7 +74,18 @@ This algorithm works by generating a horizon "X" policy tree for the agent given
 belief state each time generateStrategy is called. After generating the policy tree to use,
 calling decideGameAction will cause the agent to traverse the generated policy tree until it hits
 the edge. If generateStrategy is never called, it is automatically called when an agent hits an
-"edge node" on its policy tree.
+"edge node" on its policy tree. Below is the traversal algorithm used:
+
+* if horizon = 0, return null
+* Normalize incoming belief vector
+* Find best action available. For all actions:
+  * Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
+  * Calculate the new belief vector based on this action. (b^a)
+  * Go through every possible observation
+    * calculate the probability of this observation (P(o|s,a)). HOLD ON TO THIS
+    * calculate a new belief vector based on this operation.
+    * call this function at step 0, using our new belief vector and horizon - 1.
+  * Test to see if action is worth saving. If not, trash it.
 
 License
 =======

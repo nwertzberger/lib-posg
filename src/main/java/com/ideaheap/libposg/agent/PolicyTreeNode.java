@@ -12,16 +12,15 @@ import java.util.Set;
  * Date: 4/20/13
  * Time: 12:41 PM
  * Email: wertnick@gmail.com
+ *
+ * I'm sorry for this abomination...
  */
 public class PolicyTreeNode {
-    public Map<Set<Observation>, PolicyTreeNode> children;
-    public Set<Action> actions;
+    public Map<Action, PolicyTreeTransition> transitions;
+    public Action activeAction;
 
     public PolicyTreeNode findNextNode(Set<Observation> o) {
-        if (children.containsKey(o)) {
-            return children.get(o);
-        }
-        else return null;
+        return transitions.get(activeAction).findTransition(o);
     }
 
     /**
@@ -30,11 +29,12 @@ public class PolicyTreeNode {
      * @return
      */
     public Action getAction() {
-        int ActionIdx = (int) (Math.random() * actions.size());
-        Iterator<Action> desiredAction = actions.iterator();
+        int ActionIdx = (int) (Math.random() * transitions.keySet().size());
+        Iterator<Action> desiredAction = transitions.keySet().iterator();
         for (int i=0; i < ActionIdx; i++) {
             desiredAction.next();
         }
-        return desiredAction.next();
+        activeAction = desiredAction.next();
+        return activeAction;
     }
 }
