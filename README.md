@@ -81,6 +81,10 @@ If there are two equally valued strategies, they will be chosen randomly with ev
 
 I should draw out a policy tree of horizon h for each of these agents as well.
 
+### Only one observation can be taken into account
+
+I hope to fix this soon...
+
 Internals
 =========
 

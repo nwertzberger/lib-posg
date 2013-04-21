@@ -2,6 +2,7 @@ package com.ideaheap.libposg.agent;
 
 import com.ideaheap.libposg.state.*;
 
+import java.awt.image.DataBufferDouble;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -95,6 +96,7 @@ public class StrategyTreeAgent extends Agent {
         Set<PolicyTreeTransition> bestAction = new HashSet<PolicyTreeTransition>();
 
         // For all actions:
+        Double bestValue = null;
         for (Action a : this.getActions().values()) {
 
             // Store b(a,o).  a is constant, so this will be implicit.
@@ -105,7 +107,8 @@ public class StrategyTreeAgent extends Agent {
                 normalizeBelief(b);
             }
 
-            // Task 2.3: Maximize and recurse.
+            // Task 2.3: Calculate expected value
+            Double expectedValue = 0.0;
             for (Game g : belief.keySet()) {
                 Double currBelief = belief.get(g);
 
@@ -113,18 +116,49 @@ public class StrategyTreeAgent extends Agent {
                 JointAction jointAction = g.getBestResponseJointAction(this, a);
                 Double currReward = jointAction.getAgentRewards().get(this);
 
+                expectedValue += currBelief*currReward;
+
                 // Go through every possible Observation
                 // Due to the way we organize transitions, the probabilities are currently set up as:
+                // At this time, we have chosen the game and the action.
+                // We need to take each observation's probability of existing given the current action...
+                // This should be P(o|s,a) = \alpha \SUM_{t \in T} P(o|t) * P(t|s,a)
                 // P(s'|a,s), P(o|s',a,s)
-                for (Transition t : jointAction.getTransitions().keySet()) {
-                    Double transitionProbability = jointAction.getTransitions().get(t); // P(s'|a,s)
-                    // generate a new belief state based on our actions and observations up to here.
-                    Map<Game, Double> newBelief = new HashMap<Game, Double>(belief);
 
+                Map<Observation, Double> observationProb = new HashMap<Observation, Double>();
+                for (Transition t : jointAction.getTransitions().keySet()) {
+                    // P(s'|a,s)
+                    Double transitionProbability = jointAction.getTransitions().get(t); // P(s'|a,s)
+                    for (Observation o : t.getAgentObservations(this).keySet()) {
+                        // P(o|s',a,s)
+                        Double observationProbability = t.getAgentObservations(this).get(o);
+                        if (!observationProb.containsKey(o)) observationProb.put(o,0.0);
+                        observationProb.put(o, observationProb.get(o) + transitionProbability * observationProbability);
+                    }
+                }
+
+                // Now go through and calculate the value
+                PolicyTreeTransition transition = new PolicyTreeTransition();
+                for (Observation o : observationProb.keySet()) {
+                    Set<Observation> observations = new HashSet<Observation>();
+                    observations.add(o);
+                    PolicyTreeNode newNode = generatePolicyTreeNode(observationBeliefs.get(o), horizon - 1);
+                    transition.addTransition(observations,newNode);
+                    expectedValue += newNode.getExpectedValue();
+                }
+
+                // MAXIMIZE
+                if (bestValue == null || expectedValue >= bestValue - EPSILON) {
+                    if (expectedValue > bestValue + EPSILON) {
+                        node.transitions = new HashSet<PolicyTreeTransition>();
+                        bestValue = expectedValue;
+                    }
+                    node.transitions.add(transition);
                 }
             }
         }
 
+        node.setExpectedValue(bestValue);
         return node;
     }
 

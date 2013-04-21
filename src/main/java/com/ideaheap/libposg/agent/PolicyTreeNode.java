@@ -19,6 +19,7 @@ import java.util.Set;
 public class PolicyTreeNode {
     public Set<PolicyTreeTransition> transitions;
     private static final Random rand = new Random();
+    private Double expectedValue;
 
     /**
      * if there are more than one available action, it means that we have equivalent strategies.
@@ -32,5 +33,13 @@ public class PolicyTreeNode {
             desiredTransition.next();
         }
         return desiredTransition.next();
+    }
+
+    public Double getExpectedValue() {
+        return expectedValue;
+    }
+
+    public void setExpectedValue(Double expectedValue) {
+        this.expectedValue = expectedValue;
     }
 }
