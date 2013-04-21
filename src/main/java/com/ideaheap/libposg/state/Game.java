@@ -75,4 +75,18 @@ public class Game {
         }
         return actions;
     }
+
+    /**
+     * This is where the game theory is supposed to live.
+     *
+     * Right now we're only worrying about one agent.
+     *
+     * @param agent
+     * @param action
+     * @return
+     */
+    public JointAction getBestResponseJointAction(Agent agent, Action action) {
+        Set<JointAction> actions = getJointActionsWithAgentAction(agent, action);
+        return actions.iterator().next();
+    }
 }

@@ -54,18 +54,32 @@ Observations are used by an agent to sense its current state. These should
 be tied to the agent using the observation. The same object should be passed
 to every JointAction.
 
-Assumptions
-===========
+Assumptions / Shortcomings
+==========================
 
-Some assumptions made:
+As with any new project, There are a laundry list of TODO's.
+
+### Agent actions are the same for every game.
 
 Every game has every joint action of every agent participating. The actions are defined
-inside of the agent, and these actions are used in every game. It's orthogonal.
+inside of the agent, and these actions are used in every game.
 This is really the only way any agent can survive in a pOSG, as we really don't know
 exactly which game we are playing at any given time.
 
-Agents will always move in the pure strategy best response based on observations.
-* If there are two equally valued strategies, they will be chosen randomly.
+### Observations are only of the "true / false" variety.
+
+At least in this version, attacking gradient observations has not been attempted.
+
+### Only pure strategies are evaluated
+
+I hope to change this into a more generic "strategy" action, that can then result in
+mixed-strategy nash equilibria, but right now, this is not the case.
+
+If there are two equally valued strategies, they will be chosen randomly with even weight.
+
+### Opponent Agent responses are only determined based on the current game.
+
+I should draw out a policy tree of horizon h for each of these agents as well.
 
 Internals
 =========
@@ -76,16 +90,17 @@ calling decideGameAction will cause the agent to traverse the generated policy t
 the edge. If generateStrategy is never called, it is automatically called when an agent hits an
 "edge node" on its policy tree. Below is the traversal algorithm used:
 
-* if horizon = 0, return null
-* Normalize incoming belief vector
-* Find best action available. For all actions:
-  * Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
-  * Calculate the new belief vector based on this action. (b^a)
-  * Go through every possible observation
-    * calculate the probability of this observation (P(o|s,a)). HOLD ON TO THIS
-    * calculate a new belief vector based on this operation.
-    * call this function at step 0, using our new belief vector and horizon - 1.
-  * Test to see if action is worth saving. If not, trash it.
+- if horizon = 0, return null
+- Normalize incoming belief vector
+- Find best action available. For all actions:
+    - For all games:
+        - Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
+        - Calculate the new belief vector based on this action. (b^a)
+        - Go through every possible observation
+            - calculate the probability of this observation (P(o|s,a)). HOLD ON TO THIS
+            - calculate a new belief vector based on this operation.
+            - call this function at step 0, using our new belief vector and horizon - 1.
+        - Test to see if action is worth saving. If not, trash it.
 
 License
 =======

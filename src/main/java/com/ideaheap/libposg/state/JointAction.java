@@ -89,4 +89,8 @@ public class JointAction {
         }
         throw new RuntimeException("Transition probabilities must add up to 1");
     }
+
+    public ImmutableMap<Transition, Double> getTransitions() {
+        return transitions;
+    }
 }

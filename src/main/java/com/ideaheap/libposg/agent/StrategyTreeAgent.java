@@ -1,9 +1,6 @@
 package com.ideaheap.libposg.agent;
 
-import com.ideaheap.libposg.state.Action;
-import com.ideaheap.libposg.state.Game;
-import com.ideaheap.libposg.state.JointAction;
-import com.ideaheap.libposg.state.Observation;
+import com.ideaheap.libposg.state.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,8 +14,6 @@ import java.util.Set;
  * Email: wertnick@gmail.com
  *
  * This class generates a tree of horizon depth based on the current belief.
- *
- * THIS ALL IS POORLY ARCHITECTED
  *
  */
 public class StrategyTreeAgent extends Agent {
@@ -73,13 +68,14 @@ public class StrategyTreeAgent extends Agent {
      * 0: if horizon = 0, return null
      * 1: Normalize incoming belief vector
      * 2: Find best action available. For all actions:
-     *      a. Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
-     *      b. Calculate the new belief vector based on this action. (b^a)
-     *      c. Go through every possible observation
-     *           i. calculate the probability of this observation (P(o|s,a)). HOLD ON TO THIS
-     *           ii. calculate a new belief vector based on this operation.
-     *           iii. call this function at step 0, using our new belief vector and horizon - 1.
-     *      d. Test to see if action is worth saving. If not, trash it.
+     *      2.1. For all games:
+     *          a. Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
+     *          b. Calculate the new belief vector based on this action. (b^a)
+     *          c. Go through every possible observation
+     *               i. calculate the probability of this observation (P(o|s,a)). HOLD ON TO THIS
+     *               ii. calculate a new belief vector based on this observation.
+     *               iii. call this function at step 0, using our new belief vector and horizon - 1.
+     *          d. Test to see if action is worth saving. If not, trash it.
      *
      *
      * @param belief
@@ -87,16 +83,32 @@ public class StrategyTreeAgent extends Agent {
      * @return
      */
     PolicyTreeNode generatePolicyTreeNode(Map<Game, Double> belief, int horizon) {
-
-        // Task 0: early quit
-        if (horizon == 0) return null;
-
-        // Task 1: normalize
-        normalizeBelief(belief);
+        if (horizon == 0) return null; // Task 0: early quit
+        normalizeBelief(belief); // Task 1: normalize
 
         // Task 2: find the best actions
         PolicyTreeNode node = new PolicyTreeNode();
-        for (Action a : )
+        Set<PolicyTreeTransition> bestAction = new HashSet<PolicyTreeTransition>();
+
+        // For all actions:
+        for (Action a : this.getActions().values()) {
+            for (Game g : belief.keySet()) {
+                // Calculate action value given ourbelief state.
+                Double currBelief = belief.get(g);
+                JointAction jointAction = g.getBestResponseJointAction(this, a);
+                Double currReward = jointAction.getAgentRewards().get(this);
+
+                // Go through every possible Observation
+                // Due to the way we organize transitions, the probabilities are currently set up as:
+                // P(s'|a,s), P(o|s',a,s)
+                for (Transition t : jointAction.getTransitions().keySet()) {
+                    Double transitionProbability = jointAction.getTransitions().get(t); // P(s'|a,s)
+
+                    // generate a new belief state based on our actions and observations up to here.
+                    Map<Game, Double> newBelief = new HashMap<Game, Double>(belief);
+                }
+            }
+        }
 
         return node;
     }
@@ -106,5 +118,4 @@ public class StrategyTreeAgent extends Agent {
         for (Double bi : belief.values()) total += bi;
         for (Game g : belief.keySet()) belief.put(g,belief.get(g) / total);
     }
-
 }

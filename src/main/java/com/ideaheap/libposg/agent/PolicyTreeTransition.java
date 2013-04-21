@@ -1,5 +1,6 @@
 package com.ideaheap.libposg.agent;
 
+import com.ideaheap.libposg.state.Action;
 import com.ideaheap.libposg.state.Observation;
 
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Set;
  */
 public class PolicyTreeTransition {
     Map<Set<Observation>, PolicyTreeNode> observations = new HashMap<Set<Observation>, PolicyTreeNode>();
-    public Double expectedValue;
+    public Action action;
 
     public void addTransition(Set<Observation> obs, PolicyTreeNode dest) {
         observations.put(obs, dest);

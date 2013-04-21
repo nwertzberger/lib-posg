@@ -5,6 +5,7 @@ import com.ideaheap.libposg.state.Observation;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -13,28 +14,23 @@ import java.util.Set;
  * Time: 12:41 PM
  * Email: wertnick@gmail.com
  *
- * I'm sorry for this abomination...
+ * This is simply here to deal with the fact that more than one action can be equivalent...
  */
 public class PolicyTreeNode {
-    public Map<Action, PolicyTreeTransition> transitions;
-    public Action activeAction;
-
-    public PolicyTreeNode findNextNode(Set<Observation> o) {
-        return transitions.get(activeAction).findTransition(o);
-    }
+    public Set<PolicyTreeTransition> transitions;
+    private static final Random rand = new Random();
 
     /**
      * if there are more than one available action, it means that we have equivalent strategies.
      * Return one randomly.
      * @return
      */
-    public Action getAction() {
-        int ActionIdx = (int) (Math.random() * transitions.keySet().size());
-        Iterator<Action> desiredAction = transitions.keySet().iterator();
+    public PolicyTreeTransition getTransition() {
+        int ActionIdx = rand.nextInt(transitions.size());
+        Iterator<PolicyTreeTransition> desiredTransition = transitions.iterator();
         for (int i=0; i < ActionIdx; i++) {
-            desiredAction.next();
+            desiredTransition.next();
         }
-        activeAction = desiredAction.next();
-        return activeAction;
+        return desiredTransition.next();
     }
 }
