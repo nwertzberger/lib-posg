@@ -94,6 +94,10 @@ the edge. If generateStrategy is never called, it is automatically called when a
 - Normalize incoming belief vector
 - Find best action available. For all actions:
     - For all games:
+        - For all observations
+            - Update belief for this.
+    - Normalize all action - observation combo beliefs.
+    - For all games:
         - Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
         - Calculate the new belief vector based on this action. (b^a)
         - Go through every possible observation
