@@ -14,7 +14,7 @@
 # (only one agent)
 #
 agents:
-    agent1:
+    agentHuman:
         discount: 0.9
         horizon: 4
         actions: [ LEFT, RIGHT, SUCK ]
@@ -27,136 +27,136 @@ startingGame: LD
 games:
     # Clean states:
     LC:
-        -   jointAction: {agent1: LEFT}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: LEFT}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LC: 
                     p: 0.8
                     observations: 
-                        agent1: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
                 RC:
                     p: 0.2
                     observations: 
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
 
-        -   jointAction: {agent1: RIGHT}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: RIGHT}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LC: 
                     p: 0.2
                     observations: 
-                        agent1: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
                 RC:
                     p: 0.8
                     observations: 
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
 
-        -   jointAction: {agent1: SUCK}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: SUCK}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LC: 
                     p: 1.0 
                     observations:
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
     RC:
-        -   jointAction: {agent1: LEFT}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: LEFT}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LC: 
                     p: 0.8
                     observations: 
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
                 RC:
                     p: 0.2
                     observations: 
-                        agent1: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
 
-        -   jointAction: {agent1: RIGHT}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: RIGHT}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LC: 
                     p: 0.2
                     observations: 
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
                 RC:
                     p: 0.8
                     observations: 
-                        agent1: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
 
-        -   jointAction: {agent1: SUCK}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: SUCK}
+            rewards: {agentHuman: -0.1}
             transitions:
                 RC: 
                     p: 1.0 
                     observations:
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
 
     # Dirty States:
     LD:
-        -   jointAction: {agent1: LEFT}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: LEFT}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LD: 
                     p: 0.8
                     observations: 
-                        agent1: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
                 RD:
                     p: 0.2
                     observations: 
-                        agent1: { BUMP: 0.2, DIRTY: 0.8 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.8 }
 
-        -   jointAction: {agent1: RIGHT}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: RIGHT}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LD: 
                     p: 0.2
                     observations: 
-                        agent1: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
                 RD:
                     p: 0.8
                     observations: 
-                        agent1: { BUMP: 0.2, DIRTY: 0.8 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.8 }
 
-        -   jointAction: {agent1: SUCK}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: SUCK}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LD: 
                     p: 1.0 
                     observations:
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
     RD:
-        -   jointAction: {agent1: LEFT}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: LEFT}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LD: 
                     p: 0.8
                     observations: 
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
                 RD:
                     p: 0.2
                     observations: 
-                        agent1: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
 
-        -   jointAction: {agent1: RIGHT}
-            rewards: {agent1: -0.1}
+        -   jointAction: {agentHuman: RIGHT}
+            rewards: {agentHuman: -0.1}
             transitions:
                 LD: 
                     p: 0.2
                     observations: 
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
                 RD:
                     p: 0.8
                     observations: 
-                        agent1: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
 
-        -   jointAction: {agent1: SUCK}
-            rewards: {agent1: 1.0}
+        -   jointAction: {agentHuman: SUCK}
+            rewards: {agentHuman: 1.0}
             transitions:
                 RD: 
                     p: 0.2 
                     observations:
-                        agent1: { BUMP: 0.2, DIRTY: 0.8 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.8 }
                 RC: 
                     p: 0.8
                     observations:
-                        agent1: { BUMP: 0.2, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }

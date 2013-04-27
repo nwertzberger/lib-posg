@@ -3,8 +3,11 @@ package com.ideaheap.libposg.agent;
 import com.ideaheap.libposg.state.Action;
 import com.ideaheap.libposg.state.Game;
 import com.ideaheap.libposg.state.Observation;
+import com.ideaheap.libposg.state.World;
+import com.ideaheap.libposg.strategy.Strategy;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,51 +16,66 @@ import java.util.Set;
  * Date: 4/14/13
  * Time: 3:33 PM
  * Email: wertnick@gmail.com
- *
+ * <p/>
  * The agent is the interface that must be implemented for using the simulator.
  */
-public abstract class Agent {
+public class Agent {
+    /* These three things are settings for everything else */
+    private final String name;
+    private final Strategy strategy;
 
-    private String name;
+    private World world;
     private Map<String, Action> actions = new HashMap<String, Action>();
     private Map<String, Observation> observations = new HashMap<String, Observation>();
+    private Map<Game, Double> belief = null;
     private Integer horizon;
-    private Map<String, Double> belief;
-    private Map<String, Game> games;
 
-    public abstract void observe(Set<Observation> observations);
-    public abstract Action decideGameAction() throws AgentException;
-    public abstract void onGenerateStrategy(
-            Map<String, Game> games,
-            Map<String, Double> belief,
-            Integer horizon);
+    private Map<String, Double> beliefHack; // HACK
 
-    public void setGames(Map<String, Game> games) {
-        this.games = games;
+    /* Runtime state stuff */
+    private Set<Observation> observed = new HashSet<Observation>();
+    private PolicyTreeNode policy;
+
+    public Agent(String name, Strategy strategy) {
+        this.name = name;
+        this.strategy = strategy;
     }
 
-    public Map<String,Action> getActions() {
-        return actions;
+    public void observe(Set<Observation> observations) {
+        for (Observation o : observations) {
+            addObservation(o);
+        }
     }
 
-    public Agent withHorizon(int h) {
-        this.setHorizon(h);
-        return this;
+    public void observe(Observation observation) {
+        observed.add(observation);
     }
 
-    public Agent withBelief(Map<String, Double> belief) {
-        this.setBelief(belief);
-        return this;
+    public Action decideGameAction() {
+        beliefHackCheck();
+        if (policy != null) {
+            policy = policy.next(observed); // Grab the next action based on our horizon and the last observations.
+        }
+        policy = strategy.generateStrategy(world, this, belief, horizon); // Get policy up to horizon
+        belief = policy.getBelief(); // sock away our current belief
+        observed.clear(); // clean out current stored observations
+
+        Action a = policy.getAction();
+        if (a.hasAct()) {
+            a.act();
+        }
+        return a;
     }
 
     /*
      * Literally everything after this is boiler plate... Go Java!
      */
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Agent that = (HumanAgent) o;
+        Agent that = (Agent) o;
 
         if (actions != null ? !actions.equals(that.actions) : that.actions != null) return false;
         if (horizon != null ? !horizon.equals(that.horizon) : that.horizon != null) return false;
@@ -81,8 +99,18 @@ public abstract class Agent {
         return "{" + this.name + "}";
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Map<String, Action> getActions() {
+        return actions;
+    }
+
+    public Agent withHorizon(int h) {
+        this.setHorizon(h);
+        return this;
+    }
+
+    public Agent withBelief(Map<Game, Double> belief) {
+        this.setBelief(belief);
+        return this;
     }
 
     public String getName() {
@@ -97,6 +125,11 @@ public abstract class Agent {
         actions.put(action.getName(), action);
     }
 
+    public Agent withAction(Action a) {
+        this.addAction(a);
+        return this;
+    }
+
     public Observation getObservation(String observationName) {
         return observations.get(observationName);
     }
@@ -105,34 +138,36 @@ public abstract class Agent {
         observations.put(observation.getName(), observation);
     }
 
-    public void setHorizon(Integer horizon) {
-        this.horizon = horizon;
-    }
-
-    public void setBelief(Map<String, Double> belief) {
-        this.belief = belief;
-    }
-
-    public Agent withAction(Action a) {
-        this.addAction(a);
-        return this;
-    }
-
     public Agent withObservation(Observation o) {
         this.addObservation(o);
         return this;
     }
 
-    public Map<String, Double> getBelief() {
-        return belief;
+    public void setHorizon(Integer horizon) {
+        this.horizon = horizon;
     }
 
-    public Map<String, Game> getGames() {
-        return games;
+    public void setBelief(Map<Game, Double> belief) {
+        this.belief = belief;
     }
 
+    public void setWorld(World world) {
+        this.world = world;
+    }
 
-    public void generateStrategy() {
-        onGenerateStrategy(games, belief, horizon);
+    /* BEGIN HACK */
+
+    public void setBeliefHack(Map<String, Double> belief) {
+        beliefHack = belief;
+    }
+
+    private void beliefHackCheck() {
+        if (belief == null) {
+            Map<Game, Double> actualBelief = new HashMap<Game, Double>();
+            for (String g : beliefHack.keySet()) {
+                actualBelief.put(world.getGame(g), beliefHack.get(g));
+            }
+            belief = actualBelief;
+        }
     }
 }

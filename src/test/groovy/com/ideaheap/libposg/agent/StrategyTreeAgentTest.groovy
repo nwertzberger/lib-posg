@@ -1,10 +1,7 @@
 package com.ideaheap.libposg.agent
 
-import com.ideaheap.libposg.state.Action
-import com.ideaheap.libposg.state.Game
-import com.ideaheap.libposg.state.JointAction
-import com.ideaheap.libposg.state.Observation
-import com.ideaheap.libposg.state.Transition
+import com.ideaheap.libposg.state.*
+import com.ideaheap.libposg.strategy.PomdpStrategy
 import org.junit.Before
 import org.junit.Test
 
@@ -20,11 +17,11 @@ import static junit.framework.Assert.assertEquals
  */
 class StrategyTreeAgentTest {
 
-    StrategyTreeAgent agent;
+    PomdpStrategy agent;
 
     @Before
     void setUp() {
-        agent = new StrategyTreeAgent("agent")
+        agent = new PomdpStrategy("agent")
         agent.addAction(new Action("JUMP"))
         agent.addAction(new Action("SIT"))
     }
@@ -40,7 +37,7 @@ class StrategyTreeAgentTest {
     @Test
     public void onlyOneOtherGameChoice() {
         Game game = new Game("G1");
-        game.addJointAction(generateSingleAgentJointAction("SIT",1.0d,game));
+        game.addJointAction(generateSingleAgentJointAction("SIT", 1.0d, game));
         agent.onGenerateStrategy([G1: game], [G1: 1.0], 1)
         assert agent.decideGameAction() == agent.getAction("SIT")
     }
@@ -67,6 +64,6 @@ class StrategyTreeAgentTest {
         stuff[new Game("G1")] = 0.2d
         stuff[new Game("G2")] = 0.3d
         agent.normalizeBelief(stuff)
-        assertEquals(stuff.inject(0d) { acc, k, v -> acc + v} as Double, 1.0d, Double.MIN_VALUE)
+        assertEquals(stuff.inject(0d) { acc, k, v -> acc + v } as Double, 1.0d, Double.MIN_VALUE)
     }
 }

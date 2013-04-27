@@ -1,38 +1,54 @@
 package com.ideaheap.libposg.state;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.ideaheap.libposg.agent.Agent;
-import com.ideaheap.libposg.agent.StrategyTreeAgent;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * User: nwertzberger
  * Date: 4/15/13
  * Time: 7:56 PM
  * Email: wertnick@gmail.com
- *
+ * <p/>
  * A game is a set of joint actions that agents can take.
- *
  */
 public class Game {
-    private Map<ImmutableMap<Agent, Action>, JointAction> jointActions = new HashMap<ImmutableMap<Agent, Action>, JointAction>();
-
-    private String name;
+    private final String name;
+    private ImmutableMap<ImmutableMap<Agent, Action>, JointAction> jointActions;
 
     public Game(String name) {
         this.name = name;
     }
 
-    public void addJointAction(JointAction action) {
-        jointActions.put(action.getAgentActions(), action);
+    public void setJointActions(Map<ImmutableMap<Agent, Action>, JointAction> jointActions) {
+        this.jointActions = ImmutableMap.copyOf(jointActions);
     }
 
-    public Game withJointAction(JointAction action) {
-        addJointAction(action);
-        return this;
+    public JointAction getJointAction(Map<Agent, Action> agentActions) {
+        if (agentActions == null)
+            return null;
+        else
+            return jointActions.get(ImmutableMap.copyOf(agentActions));
     }
+
+    public Set<JointAction> getJointActionsWithAgentAction(Agent agent, Action action) {
+        Set<JointAction> actions = new HashSet<JointAction>();
+        for (JointAction a : actions) {
+            if (a.getAgentActions().get(agent) == action)
+                actions.add(a);
+        }
+        return actions;
+    }
+
+    public JointAction getBestResponseJointAction(Agent agent, Action action) {
+        Set<JointAction> actions = getJointActionsWithAgentAction(agent, action);
+        return actions.iterator().next();
+    }
+
+    /* CRUFT */
 
     public String getName() {
         return name;
@@ -62,31 +78,4 @@ public class Game {
         return "{" + jointActions + "}";
     }
 
-    public JointAction getJointAction(Map<Agent, Action> agentActions) {
-        return agentActions == null ?  null : jointActions.get(ImmutableMap.copyOf(agentActions));
-    }
-
-    public Set<JointAction> getJointActionsWithAgentAction(Agent agent, Action action) {
-        Set<JointAction> actions = new HashSet<JointAction>();
-        for (JointAction a : actions) {
-            if (a.getAgentActions().get(agent) == action) {
-                actions.add(a);
-            }
-        }
-        return actions;
-    }
-
-    /**
-     * This is where the game theory is supposed to live.
-     *
-     * Right now we're only worrying about one agent.
-     *
-     * @param agent
-     * @param action
-     * @return
-     */
-    public JointAction getBestResponseJointAction(Agent agent, Action action) {
-        Set<JointAction> actions = getJointActionsWithAgentAction(agent, action);
-        return actions.iterator().next();
-    }
 }

@@ -10,7 +10,6 @@ import java.util.Map;
  * User: nwertzberger
  * Date: 4/11/13
  * Time: 11:41 PM
- *
  */
 public class Transition {
 
@@ -29,6 +28,9 @@ public class Transition {
             Map<Agent, Map<Observation, Double>> observations) {
         this(destGame, ImmutableMap.copyOf(observations));
     }
+
+    /* CRUFT */
+
     public Map<Observation, Double> getAgentObservations(Agent agent) {
         return this.observations.get(agent);
     }
@@ -41,7 +43,8 @@ public class Transition {
         Transition that = (Transition) o;
         // One of the uses of == on purpose
         if (destGame != that.destGame) return false;
-        if (observations != null ? !observations.equals(that.observations) : that.observations != null) return false;
+        if (observations != null ? !observations.equals(that.observations) : that.observations != null)
+            return false;
 
         return true;
     }

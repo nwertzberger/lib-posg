@@ -6,9 +6,9 @@ import java.util.concurrent.Callable;
  * User: nwertzberger
  * Date: 4/11/13
  * Time: 11:02 PM
- *
+ * <p/>
  * An Observation is related to states and actions.
- *
+ * <p/>
  * "If you are in this state and doing this action, you will see X with this
  * probability."
  */
@@ -20,12 +20,15 @@ public class Observation {
         this.name = name;
     }
 
+
+    /* CRUFT */
+
     public String getName() {
         return name;
     }
 
     public Observation withProcess(Callable<Boolean> process) {
-        this.process = process;
+        setProcess(process);
         return this;
     }
 
@@ -51,4 +54,11 @@ public class Observation {
         return "{" + name + "}";
     }
 
+    public Callable<Boolean> getProcess() {
+        return process;
+    }
+
+    public void setProcess(Callable<Boolean> process) {
+        this.process = process;
+    }
 }

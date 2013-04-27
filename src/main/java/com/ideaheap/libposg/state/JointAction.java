@@ -1,9 +1,7 @@
 package com.ideaheap.libposg.state;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.ideaheap.libposg.agent.Agent;
-import com.ideaheap.libposg.simulator.PosgSimulatorException;
 
 import java.util.Map;
 
@@ -12,7 +10,7 @@ import java.util.Map;
  * Date: 4/16/13
  * Time: 9:21 PM
  * Email: wertnick@gmail.com
- *
+ * <p/>
  * JointActions are only defined by their agentAction, two JointActions with
  * different agent rewards or transitions are considered equal.
  */
@@ -22,11 +20,9 @@ public class JointAction {
     private final ImmutableMap<Transition, Double> transitions;
 
     /**
-     *
      * @param agentActions
      * @param agentRewards
-     * @param transitions
-     * The set of transitions and their probabilities of occurring,  Adding to 1.
+     * @param transitions  The set of transitions and their probabilities of occurring,  Adding to 1.
      */
     public JointAction(
             ImmutableMap<Agent, Action> agentActions,
@@ -42,11 +38,25 @@ public class JointAction {
             Map<Agent, Double> agentRewards,
             Map<Transition, Double> transitions) {
         this(
-            ImmutableMap.copyOf(agentActions),
-            ImmutableMap.copyOf(agentRewards),
-            ImmutableMap.copyOf(transitions)
+                ImmutableMap.copyOf(agentActions),
+                ImmutableMap.copyOf(agentRewards),
+                ImmutableMap.copyOf(transitions)
         );
     }
+
+    public Transition determineTransition() {
+        Double choice = Math.random();
+        for (Transition t : transitions.keySet()) {
+            Double p = transitions.get(t);
+            if (choice < p)
+                return t;
+            choice -= p;
+        }
+        throw new RuntimeException("Transition probabilities must add up to 1");
+    }
+
+    /* CRUFT */
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,7 +76,7 @@ public class JointAction {
     }
 
     @Override
-    public String toString(){
+    public String toString() {
         return "{" + agentActions + " => Reward:" + agentRewards +
                 ", transitions:" + transitions + "}";
     }
@@ -77,17 +87,6 @@ public class JointAction {
 
     public ImmutableMap<Agent, Double> getAgentRewards() {
         return agentRewards;
-    }
-
-    public Transition determineTransition() {
-        Double choice = Math.random();
-        for (Transition t: transitions.keySet()) {
-            Double p = transitions.get(t);
-            if (choice < p)
-                return t;
-            choice -= p;
-        }
-        throw new RuntimeException("Transition probabilities must add up to 1");
     }
 
     public ImmutableMap<Transition, Double> getTransitions() {

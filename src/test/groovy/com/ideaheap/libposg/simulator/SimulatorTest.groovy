@@ -1,11 +1,6 @@
 package com.ideaheap.libposg.simulator
 
-import com.ideaheap.libposg.agent.Agent
-import com.ideaheap.libposg.simulator.Simulator
-import org.junit.Before
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 
 /**
  *  User: nwertzberger
