@@ -36,16 +36,11 @@ public class Game {
 
     public Set<JointAction> getJointActionsWithAgentAction(Agent agent, Action action) {
         Set<JointAction> actions = new HashSet<JointAction>();
-        for (JointAction a : actions) {
+        for (JointAction a : jointActions.values()) {
             if (a.getAgentActions().get(agent) == action)
                 actions.add(a);
         }
         return actions;
-    }
-
-    public JointAction getBestResponseJointAction(Agent agent, Action action) {
-        Set<JointAction> actions = getJointActionsWithAgentAction(agent, action);
-        return actions.iterator().next();
     }
 
     /* CRUFT */

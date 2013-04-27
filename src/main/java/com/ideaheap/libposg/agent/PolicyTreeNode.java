@@ -64,13 +64,14 @@ public class PolicyTreeNode {
 
         res.append("{");
         res.append(action);
-        res.append(", ");
+        res.append(",\n");
         for (ImmutableSet<Observation> obs : transitions.keySet()) {
-            res.append(obs);
+            res.append("    " + obs);
             res.append(" => ");
-            res.append(transitions.get(obs));
+            res.append(transitions.get(obs) == null ? "END" : transitions.get(obs).toString().replaceAll("\n", "\n    "));
+            res.append("\n");
         }
-        res.append("}");
+        res.append("}\n");
         return res.toString();
     }
 }

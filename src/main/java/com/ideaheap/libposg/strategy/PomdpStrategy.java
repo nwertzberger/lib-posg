@@ -88,7 +88,7 @@ public class PomdpStrategy implements Strategy {
                 Double currBelief = belief.get(g);
 
                 // Calculate action value given ourbelief state.
-                JointAction jointAction = g.getBestResponseJointAction(agent, a);
+                JointAction jointAction = g.getJointActionsWithAgentAction(agent, a).iterator().next();
                 Double currReward = jointAction.getAgentRewards().get(agent);
 
                 expectedValue += currBelief * currReward;
@@ -119,7 +119,7 @@ public class PomdpStrategy implements Strategy {
                     observations.add(o);
                     PolicyTreeNode newNode = generatePolicyTreeNode(observationBeliefs.get(o), horizon - 1);
                     transitions.put(observations, newNode);
-                    expectedValue += newNode.getExpectedValue();
+                    expectedValue += newNode == null ? 0 : newNode.getExpectedValue();
                 }
 
                 // MAXIMIZE
@@ -139,7 +139,7 @@ public class PomdpStrategy implements Strategy {
         // We already know the action
         for (Game currGame : belief.keySet()) {
             Double currBelief = belief.get(currGame);
-            JointAction jointAction = currGame.getBestResponseJointAction(agent, a);
+            JointAction jointAction = currGame.getJointActionsWithAgentAction(agent, a).iterator().next();
 
             // Transitions map destination games to actions... We need the reverse.
             for (Transition t : jointAction.getTransitions().keySet()) {
