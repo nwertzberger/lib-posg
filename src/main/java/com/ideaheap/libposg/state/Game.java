@@ -55,22 +55,23 @@ public class Game {
         if (o == null || getClass() != o.getClass()) return false;
 
         Game game = (Game) o;
-        if (jointActions != null
-                ? !jointActions.equals(game.jointActions)
-                : game.jointActions != null)
-            return false;
+
+        if (jointActions != null ? !jointActions.equals(game.jointActions) : game.jointActions != null) return false;
+        if (name != null ? !name.equals(game.name) : game.name != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return jointActions != null ? jointActions.hashCode() : 0;
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (jointActions != null ? jointActions.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "{" + jointActions + "}";
+        return "{" + name + "}";
     }
 
 }

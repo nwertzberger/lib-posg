@@ -3,9 +3,9 @@ package com.ideaheap.libposg.strategy;
 import com.ideaheap.libposg.agent.Agent;
 import com.ideaheap.libposg.agent.PolicyTreeNode;
 import com.ideaheap.libposg.state.*;
+import com.ideaheap.util.Permutations;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,9 +29,7 @@ public class PomdpStrategy implements Strategy {
     public PolicyTreeNode generateStrategy(World w, Agent me, Map<Game, Double> belief, int horizon) {
         agent = me;
         PolicyTreeNode node = generatePolicyTreeNode(belief, horizon);
-        System.out.println(node);
         return node;
-
     }
 
     /**
@@ -64,107 +62,116 @@ public class PomdpStrategy implements Strategy {
      * @param horizon
      * @return
      */
-    PolicyTreeNode generatePolicyTreeNode(Map<Game, Double> belief, int horizon) {
+    PolicyTreeNode generatePolicyTreeNode(Map<Game, Double> initialBelief, int horizon) {
         if (horizon == 0) return null; // Task 0: early quit
+        Map<Game, Double> belief = new HashMap<Game, Double>(initialBelief);
         normalizeBelief(belief); // Task 1: normalize
 
-        // Task 2: find the best actions
+        Action bestAction = null;
         Double bestValue = null;
-        PolicyTreeNode bestNode = null;
+        Map<Set<Observation>, PolicyTreeNode> bestTransitions = null;
 
-        for (Action a : agent.getActions().values()) {
+        for (Action currentAction : agent.getActions().values()) {
+            // Given: s -> (i,a)* -> A -> R -> (T, P(T|s,a)) -> (s', o, P(o|T))
+            // We want b^{a,o}
+            // We want P(o|s,a)
 
-            // Store b(a,o).  a is constant, so this will be implicit.
-            Map<Observation, Map<Game, Double>> observationBeliefs = generateActionObservationBeliefs(belief, a);
+            Map<Set<Observation>, Map<Game, Double>> currentActionBelief = getActionBelief(belief, currentAction);
+            Map<Set<Observation>, PolicyTreeNode> currentTransitions = calculateTransitions(currentActionBelief, horizon);
+            Double actionValue = calculateExpectedActionValue(belief, currentAction);
+            Double transitionValue = calculateExpectedTransitionValue(currentTransitions, currentActionBelief);
+            Double currentValue = actionValue + transitionValue;
 
-            // Task 2.2: Normalize discovered beliefs
-            for (Map<Game, Double> b : observationBeliefs.values()) {
-                normalizeBelief(b);
-            }
-
-            // Task 2.3: Calculate expected value
-            Double expectedValue = 0.0;
-            for (Game g : belief.keySet()) {
-                Double currBelief = belief.get(g);
-
-                // Calculate action value given ourbelief state.
-                JointAction jointAction = g.getJointActionsWithAgentAction(agent, a).iterator().next();
-                Double currReward = jointAction.getAgentRewards().get(agent);
-
-                expectedValue += currBelief * currReward;
-
-                // Go through every possible Observation
-                // Due to the way we organize transitions, the probabilities are currently set up as:
-                // At this time, we have chosen the game and the action.
-                // We need to take each observation's probability of existing given the current action...
-                // This should be P(o|s,a) = \alpha \SUM_{t \in T} P(o|t) * P(t|s,a)
-                // P(s'|a,s), P(o|s',a,s)
-
-                Map<Observation, Double> observationProb = new HashMap<Observation, Double>();
-                for (Transition t : jointAction.getTransitions().keySet()) {
-                    // P(s'|a,s)
-                    Double transitionProbability = jointAction.getTransitions().get(t); // P(s'|a,s)
-                    for (Observation o : t.getAgentObservations(agent).keySet()) {
-                        // P(o|s',a,s)
-                        Double observationProbability = t.getAgentObservations(agent).get(o);
-                        if (!observationProb.containsKey(o)) observationProb.put(o, 0.0);
-                        observationProb.put(o, observationProb.get(o) + transitionProbability * observationProbability);
-                    }
-                }
-
-                // Now go through and calculate the value
-                Map<Set<Observation>, PolicyTreeNode> transitions = new HashMap<Set<Observation>, PolicyTreeNode>();
-                for (Observation o : observationProb.keySet()) {
-                    Set<Observation> observations = new HashSet<Observation>();
-                    observations.add(o);
-                    PolicyTreeNode newNode = generatePolicyTreeNode(observationBeliefs.get(o), horizon - 1);
-                    transitions.put(observations, newNode);
-                    expectedValue += newNode == null ? 0 : newNode.getExpectedValue();
-                }
-
-                // MAXIMIZE
-                if (bestValue == null || expectedValue > bestValue) {
-                    bestNode = new PolicyTreeNode(a, expectedValue, belief).withTransitions(transitions);
-                    bestValue = expectedValue;
-                }
+            if (bestValue == null || bestValue < currentValue) {
+                bestAction = currentAction;
+                bestValue = currentValue;
+                bestTransitions = currentTransitions;
             }
         }
 
-        return bestNode;
+        return new PolicyTreeNode(bestAction, bestValue, belief).withTransitions(bestTransitions);
     }
 
-    private Map<Observation, Map<Game, Double>> generateActionObservationBeliefs(Map<Game, Double> belief, Action a) {
-        Map<Observation, Map<Game, Double>> observationBeliefs = new HashMap<Observation, Map<Game, Double>>();
-        // Task 2.1: find the correct beliefs moving forward.
-        // We already know the action
-        for (Game currGame : belief.keySet()) {
-            Double currBelief = belief.get(currGame);
-            JointAction jointAction = currGame.getJointActionsWithAgentAction(agent, a).iterator().next();
+    private Double calculateExpectedActionValue(Map<Game, Double> belief, Action currentAction) {
+        Double actionValue = 0.0;
+        for (Game g : belief.keySet()) {
+            Double pGame = belief.get(g);
+            Set<JointAction> jointActions = g.getJointActionsWithAgentAction(agent, currentAction);
+            for (JointAction ja : jointActions) {
+                actionValue += pGame * ja.getAgentRewards().get(agent) / jointActions.size();
+            }
+        }
+        return actionValue;
+    }
 
-            // Transitions map destination games to actions... We need the reverse.
-            for (Transition t : jointAction.getTransitions().keySet()) {
+    private Double calculateExpectedTransitionValue(
+            Map<Set<Observation>, PolicyTreeNode> currentTransitions,
+            Map<Set<Observation>, Map<Game, Double>> currentActionBelief) {
+        Double expectedValue = 0.0;
+        for (Set<Observation> obs : currentTransitions.keySet()) {
+            PolicyTreeNode node = currentTransitions.get(obs);
+            Double expectedNodeValue = node == null ? 0.0 : node.getExpectedValue();
+            Double expectedNodeProbability = 0.0;
+            for (Double gameProb : currentActionBelief.get(obs).values()) {
+                expectedNodeProbability += gameProb;
+            }
+            expectedValue += expectedNodeValue * expectedNodeProbability;
+        }
+        return expectedValue;
+    }
 
-                Double actionTransitionProbability = jointAction.getTransitions().get(t); // P(s'|a,s)
-                Game destGame = t.getDestGame();
+    private Map<Set<Observation>, PolicyTreeNode> calculateTransitions(Map<Set<Observation>, Map<Game, Double>> currentActionBelief, int horizon) {
+        Map<Set<Observation>, PolicyTreeNode> nodeTransitions = new HashMap<Set<Observation>, PolicyTreeNode>();
+        for (Set<Observation> obs : currentActionBelief.keySet()) {
+            Map<Game, Double> newBelief = currentActionBelief.get(obs);
+            PolicyTreeNode newNode = generatePolicyTreeNode(newBelief, horizon - 1);
+            nodeTransitions.put(obs, newNode);
+        }
+        return nodeTransitions;
+    }
 
-                // b(a,o) = SUM_{s \in S} b * P(s',s|a,o)
-                for (Observation o : t.getAgentObservationProbabilities(agent).keySet()) {
-                    Double observationProbability = t.getAgentObservationProbabilities(agent).get(o);
-                    // First time
-                    if (!observationBeliefs.containsKey(o)) {
-                        observationBeliefs.put(o, new HashMap<Game, Double>());
+    /**
+     * Given a starting belief and an action,
+     * Return a map of
+     * o -> s' -> P(s',o|s,a)*b(s)
+     *
+     * @param belief
+     * @param currentAction
+     * @return
+     */
+    private Map<Set<Observation>, Map<Game, Double>> getActionBelief(Map<Game, Double> belief, Action currentAction) {
+        Map<Set<Observation>, Map<Game, Double>> observationProbabilities = new HashMap<Set<Observation>, Map<Game, Double>>();
+        for (Game g : belief.keySet()) {
+            Double pGame = belief.get(g);
+            for (JointAction ja : g.getJointActionsWithAgentAction(agent, currentAction)) {
+                for (Transition t : ja.getTransitions().keySet()) {
+                    Double pTransition = ja.getTransitions().get(t);
+                    for (Set<Observation> obs : Permutations.of(t.getAgentObservationProbabilities(agent).keySet())) {
+                        Double pObservation = calculateObservationProbability(obs, t);
+                        addObservationProbability(observationProbabilities, t.getDestGame(), obs, pGame * pTransition * pObservation);
                     }
-                    if (!observationBeliefs.get(o).containsKey(destGame)) {
-                        observationBeliefs.get(o).put(destGame, 0d);
-                    }
-
-                    Double accBelief = observationBeliefs.get(o).get(destGame);
-                    Double nextBelief = currBelief * actionTransitionProbability * observationProbability;
-                    observationBeliefs.get(o).put(destGame, accBelief + nextBelief);
                 }
             }
         }
-        return observationBeliefs;
+        return observationProbabilities;
+    }
+
+    private void addObservationProbability(Map<Set<Observation>, Map<Game, Double>> observationProbabilities, Game g, Set<Observation> obs, double v) {
+        if (!observationProbabilities.containsKey(obs))
+            observationProbabilities.put(obs, new HashMap<Game, Double>());
+        if (!observationProbabilities.get(obs).containsKey(g))
+            observationProbabilities.get(obs).put(g, 0.0);
+        Double acc = observationProbabilities.get(obs).get(g);
+        observationProbabilities.get(obs).put(g, acc + v);
+    }
+
+    private Double calculateObservationProbability(Set<Observation> observedSet, Transition t) {
+        Double observationProbability = 1.0;
+        for (Observation o : t.getAgentObservationProbabilities(agent).keySet()) {
+            Double p = t.getAgentObservationProbabilities(agent).get(o);
+            observationProbability *= observedSet.contains(o) ? p : 1.0 - p;
+        }
+        return observationProbability;
     }
 
     public void normalizeBelief(Map<Game, Double> belief) {

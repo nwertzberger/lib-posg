@@ -83,7 +83,7 @@ public class Simulator {
         // Determine the transition
         Transition t = jointAction.determineTransition();
         for (Agent a : agents.values()) {
-            Map<Observation, Double> observationProbabilities = t.getAgentObservations(a);
+            Map<Observation, Double> observationProbabilities = t.getAgentObservationProbabilities(a);
             Set<Observation> observations = new HashSet<Observation>();
             for (Observation ob : observationProbabilities.keySet()) {
                 if (Math.random() < observationProbabilities.get(ob)) {

@@ -16,7 +16,7 @@
 agents:
     agentHuman:
         discount: 0.9
-        horizon: 4
+        horizon: 3
         actions: [ LEFT, RIGHT, SUCK ]
         observations: [ DIRTY, BUMP ]
         belief:

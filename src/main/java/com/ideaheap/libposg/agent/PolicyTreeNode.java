@@ -64,7 +64,12 @@ public class PolicyTreeNode {
 
         res.append("{");
         res.append(action);
-        res.append(",\n");
+        res.append(", payoff = " + expectedValue);
+        res.append(", belief = ");
+        for (Game g : belief.keySet()) {
+            res.append(g.getName() + " = " + belief.get(g) + ", ");
+        }
+        res.append("\n");
         for (ImmutableSet<Observation> obs : transitions.keySet()) {
             res.append("    " + obs);
             res.append(" => ");

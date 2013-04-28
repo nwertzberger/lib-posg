@@ -43,7 +43,7 @@ public class Agent {
 
     public void observe(Set<Observation> observations) {
         for (Observation o : observations) {
-            addObservation(o);
+            observed.add(o);
         }
     }
 
@@ -54,13 +54,15 @@ public class Agent {
     public Action decideGameAction() {
         beliefHackCheck();
         if (policy != null) {
+            System.out.println("Observed: " + observed);
             policy = policy.next(observed); // Grab the next action based on our horizon and the last observations.
+            belief = policy.getBelief(); // sock away our current belief
         }
         policy = strategy.generateStrategy(world, this, belief, horizon); // Get policy up to horizon
-        belief = policy.getBelief(); // sock away our current belief
         observed.clear(); // clean out current stored observations
 
         Action a = policy.getAction();
+        System.out.println("Executing " + a);
         if (a.hasAct()) {
             a.act();
         }

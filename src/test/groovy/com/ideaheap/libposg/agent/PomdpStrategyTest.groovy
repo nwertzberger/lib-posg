@@ -15,22 +15,24 @@ import static junit.framework.Assert.assertEquals
  *
  * It looks like I forgot to explain this class.
  */
-class StrategyTreeAgentTest {
+class PomdpStrategyTest {
 
-    PomdpStrategy agent;
+    Agent agent
+    PomdpStrategy strategy
 
     @Before
     void setUp() {
-        agent = new PomdpStrategy("agent")
+        agent = new Agent("agent")
         agent.addAction(new Action("JUMP"))
         agent.addAction(new Action("SIT"))
+        strategy = new PomdpStrategy()
     }
 
     @Test
     public void onlyOneGameChoice() {
         Game game = new Game("G1");
         game.addJointAction(generateSingleAgentJointAction("JUMP", 1.0d, game));
-        agent.onGenerateStrategy([G1: game], [G1: 1.0], 1)
+        strategy.generateStrategy(new World([G1: game]), [G1: 1.0], 1)
         assert agent.decideGameAction() == agent.getAction("JUMP")
     }
 
@@ -63,7 +65,7 @@ class StrategyTreeAgentTest {
         def stuff = [:]
         stuff[new Game("G1")] = 0.2d
         stuff[new Game("G2")] = 0.3d
-        agent.normalizeBelief(stuff)
+        strategy.normalizeBelief(stuff)
         assertEquals(stuff.inject(0d) { acc, k, v -> acc + v } as Double, 1.0d, Double.MIN_VALUE)
     }
 }

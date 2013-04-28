@@ -31,7 +31,7 @@ public class Transition {
 
     /* CRUFT */
 
-    public Map<Observation, Double> getAgentObservations(Agent agent) {
+    public Map<Observation, Double> getAgentObservationProbabilities(Agent agent) {
         return this.observations.get(agent);
     }
 
@@ -65,7 +65,4 @@ public class Transition {
         return destGame;
     }
 
-    public Map<Observation, Double> getAgentObservationProbabilities(Agent agent) {
-        return observations.get(agent);
-    }
 }
