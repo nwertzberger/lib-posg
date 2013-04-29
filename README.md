@@ -37,14 +37,40 @@ belief state. The search is exhaustive, and even the game used in the simulator 
 with a branch-factor of 8 (2 actions / 4 permutations of 2 observations) runs pretty
 slowly at a horizon of 4 or more.
 
+This algorithm works by generating a horizon "X" policy tree for the agent given the current
+belief state each time generateStrategy is called. After generating the policy tree to use,
+calling decideGameAction will cause the agent to traverse the generated policy tree until it hits
+the edge. If generateStrategy is never called, it is automatically called when an agent hits an
+"edge node" on its policy tree. Below is the traversal algorithm used:
 
-
+- if horizon = 0, return null
+- Normalize incoming belief vector
+- Find best action available. For all actions:
+    - For all games:
+        - For all observations
+            - Update belief for this.
+    - Normalize all action - observation combo beliefs.
+    - Generate an easier to parse data structure. For all games:
+        - For all joint actions:
+            - For all transitions:
+                 - For all observations:
+                    - Calculate P(o|s')*P(s'|a,s)*b(s) to store in a map of observation ->
+                      transition probabilities. *These are actually un-normalized belief
+                      vectors with all potential games aggregated into the value*
+    - For all observations:
+        - Calculate the expected value of this game with horizon - 1 and belief from the
+          current action + observation
+    - For all games:
+        - Calculate expected value of this action given our belief vector. (b(s) * R(s,a))
+    - For all observations:
+        - Calculate expected value of transitioning to this belief state. Aggregate.
+    - Maximize / only return the best action.
 
 Defining a Game
 ===============
 
-Th
-The following data types are meant to be used to create a game description.
+Games are currently run through the simulator, which trigger observations for an
+agent. The following data types are meant to be used to create a game description.
 
 Action
 ------
@@ -94,9 +120,11 @@ Agent actions are the same for every game
 -----------------------------------------
 
 Every game has every joint action of every agent participating. The actions are defined
-inside of the agent, and these actions are used in every game.
-This is really the only way any agent can survive in a pOSG, as we really don't know
-exactly which game we are playing at any given time.
+inside of the agent, and these actions are used in every game. This is really the only
+way any agent can survive in a pOSG, as we really don't know exactly which game we are
+playing at any given time. Also, most agents continue to have the same set of actions
+available at any time. If an action is unavailable in a certain game, a very negative
+payoff could be used to discourage this.
 
 Observations are only of the "true / false" variety
 ---------------------------------------------------
@@ -104,7 +132,7 @@ Observations are only of the "true / false" variety
 Gradient-based observations has not been attempted.
 
 Opponent Agent responses are not planned against
----------------------------------------------------------------------
+------------------------------------------------
 
 This program currently takes an average of all joint actions where this agent
 
@@ -112,39 +140,6 @@ I hope to change this into a more generic "strategy" action, that can then resul
 mixed-strategy nash equilibria, but right now, this is not the case.
 
 If there are two equally valued strategies, they will be chosen randomly with even weight.
-
-Internals
-=========
-
-
-This algorithm works by generating a horizon "X" policy tree for the agent given the current
-belief state each time generateStrategy is called. After generating the policy tree to use,
-calling decideGameAction will cause the agent to traverse the generated policy tree until it hits
-the edge. If generateStrategy is never called, it is automatically called when an agent hits an
-"edge node" on its policy tree. Below is the traversal algorithm used:
-
-- if horizon = 0, return null
-- Normalize incoming belief vector
-- Find best action available. For all actions:
-    - For all games:
-        - For all observations
-            - Update belief for this.
-    - Normalize all action - observation combo beliefs.
-    - Generate an easier to parse data structure. For all games:
-        - For all joint actions:
-            - For all transitions:
-                 - For all observations:
-                    - Calculate P(o|s')*P(s'|a,s)*b(s) to store in a map of observation ->
-                      transition probabilities. *These are actually un-normalized belief
-                      vectors with all potential games aggregated into the value*
-    - For all observations:
-        - Calculate the expected value of this game with horizon - 1 and belief from the
-          current action + observation
-    - For all games:
-        - Calculate expected value of this action given our belief vector. (b(s) * R(s,a))
-    - For all observations:
-        - Calculate expected value of transitioning to this belief state. Aggregate.
-    - Maximize / only return the best action.
 
 License
 =======
