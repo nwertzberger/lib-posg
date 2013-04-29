@@ -1,34 +1,62 @@
 lib-posg
 ========
 
-A library implementing a generic "game engine" for use with "partially
-observable stochastic games". Basically, if you are given a problem where you
-know what "games" will be played, and probabilities of actions leading to
-certain games, this would be usable by you.  NOTE: Path finding can be shown
-as a game. This is a more generic version of a POMDP.
+A library implementing a generic "game engine" for use in agents that can have
+their world expressed as a "partially observable stochastic game".
+
+
+Implementation Details
+======================
 
 Background
-==========
+----------
 
-This is for a project in school. However, it sounds awesome and should be open
-sourced.  The algorithm is based on the work of Eric A. Hansen, Daniel S.
-Bernstein and Shlomo Zilberstein  in "Dynamic Programming Approximations for
-Partially Observable Stochastic Games".
+The algorithm is based on the work of Eric A. Hansen, Daniel S. Bernstein and Shlomo
+Zilberstein  in "Dynamic Programming Approximations for Partially Observable Stochastic
+Games". This paper covered how to extent the tools used to solve Partially Observable
+Markov Decision Processes (single agent environments) into multi-agent environments
+by listing each game that the robots may be currently playing.
+
+This work aims to offer a solution to the problem of playing games with other agents
+where there is not a precise knowledge of what state the agent is currently, agent
+actions don't always have precisely the expected consequences, and observations are
+only sometimes accurate.  Given these constraints, a statistical model is used that
+decides on the path that is statistically most likely to achieve a high reward based
+on the information available.
+
+Given all this uncertainty, this program expects a complete map of the different states,
+or "games" an agent could be in, as well as the probabilities of what destination states
+choosing an action will result in, and the observation probabilities that would be
+achieved after doing said action to reach each state. This is expected to be exhaustive.
+
+Algorithm Used
+--------------
+
+The current algorithm used is a horizon-based depth-first-search from an agent's current
+belief state. The search is exhaustive, and even the game used in the simulator example,
+with a branch-factor of 8 (2 actions / 4 permutations of 2 observations) runs pretty
+slowly at a horizon of 4 or more.
+
+
+
 
 Defining a Game
-==========
+===============
 
-The following datatypes are meant to be used to create a game description.
+Th
+The following data types are meant to be used to create a game description.
 
-### Action
+Action
+------
 
 An agent is capable of doing actions. Actions are how an agent interacts
 with the world. After an action has been defined for an agent, that same
 object must be used whenever a reference to an action is required.
 
-### Game
+Game
+----
 
-A game is really a set of JointActions. It is a holding datatype, but
+A game is really a set of JointActions. It is a holding data type, but
 represents the destination Game to be used for other locations. Like
 Actions, once a game has been created, the same reference should always
 be used.
@@ -36,19 +64,22 @@ be used.
 The assumption is made that you have a JointAction for every possible
 combination of Agent Actions.
 
-### JointAction
+JointAction
+-----------
 
 A JointAction represents the mapping of agent actions to agent rewards
 as well as the potential transitions to another state from this action.
 
 You will add a lot of these.
 
-### Transition
+Transition
+----------
 
 Transitions show what destination state can be reached, and what probable
 observations would be made if it is the current transition.
 
-### Observation
+Observation
+-----------
 
 Observations are used by an agent to sense its current state. These should
 be tied to the agent using the observation. The same object should be passed
@@ -59,34 +90,32 @@ Assumptions / Shortcomings
 
 As with any new project, There are a laundry list of TODO's.
 
-### Agent actions are the same for every game.
+Agent actions are the same for every game
+-----------------------------------------
 
 Every game has every joint action of every agent participating. The actions are defined
 inside of the agent, and these actions are used in every game.
 This is really the only way any agent can survive in a pOSG, as we really don't know
 exactly which game we are playing at any given time.
 
-### Observations are only of the "true / false" variety.
+Observations are only of the "true / false" variety
+---------------------------------------------------
 
-At least in this version, attacking gradient observations has not been attempted.
+Gradient-based observations has not been attempted.
 
-### Only pure strategies are evaluated
+Opponent Agent responses are not planned against
+---------------------------------------------------------------------
+
+This program currently takes an average of all joint actions where this agent
 
 I hope to change this into a more generic "strategy" action, that can then result in
 mixed-strategy nash equilibria, but right now, this is not the case.
 
 If there are two equally valued strategies, they will be chosen randomly with even weight.
 
-### Opponent Agent responses are only determined based on the current game.
-
-I should draw out a policy tree of horizon h for each of these agents as well.
-
-### Only one observation can be taken into account
-
-I hope to fix this soon...
-
 Internals
 =========
+
 
 This algorithm works by generating a horizon "X" policy tree for the agent given the current
 belief state each time generateStrategy is called. After generating the policy tree to use,

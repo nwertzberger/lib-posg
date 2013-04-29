@@ -58,7 +58,7 @@ public class Agent {
             policy = policy.next(observed); // Grab the next action based on our horizon and the last observations.
             belief = policy.getBelief(); // sock away our current belief
         }
-        policy = strategy.generateStrategy(world, this, belief, horizon); // Get policy up to horizon
+        policy = strategy.generateStrategy(this, belief, horizon); // Get policy up to horizon
         observed.clear(); // clean out current stored observations
 
         Action a = policy.getAction();

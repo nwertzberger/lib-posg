@@ -26,7 +26,7 @@ public class PomdpStrategy implements Strategy {
      * @param horizon
      */
     @Override
-    public PolicyTreeNode generateStrategy(World w, Agent me, Map<Game, Double> belief, int horizon) {
+    public PolicyTreeNode generateStrategy(Agent me, Map<Game, Double> belief, int horizon) {
         agent = me;
         PolicyTreeNode node = generatePolicyTreeNode(belief, horizon);
         return node;

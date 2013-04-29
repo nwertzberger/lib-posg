@@ -3,7 +3,6 @@ package com.ideaheap.libposg.strategy;
 import com.ideaheap.libposg.agent.Agent;
 import com.ideaheap.libposg.agent.PolicyTreeNode;
 import com.ideaheap.libposg.state.Game;
-import com.ideaheap.libposg.state.World;
 
 import java.util.Map;
 
@@ -13,5 +12,5 @@ import java.util.Map;
  * Time: 3:20 PM
  */
 public interface Strategy {
-    public PolicyTreeNode generateStrategy(World w, Agent me, Map<Game, Double> belief, int horizon);
+    public PolicyTreeNode generateStrategy(Agent me, Map<Game, Double> belief, int horizon);
 }
