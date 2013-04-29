@@ -130,14 +130,21 @@ the edge. If generateStrategy is never called, it is automatically called when a
         - For all observations
             - Update belief for this.
     - Normalize all action - observation combo beliefs.
+    - Generate an easier to parse data structure. For all games:
+        - For all joint actions
+            -For all transitions:
+                 - For all observations:
+                    - Calculate P(o|s')*P(s'|a,s)*b(s) to store in a map of observation ->
+                      transition probabilities. *These are actually un-normalized belief
+                      vectors with all potential games aggregated into the value*
+    - For all observations:
+        - Calculate the expected value of this game with horizon - 1 and belief from the
+          current action + observation
     - For all games:
-        - Calculate expected value of this action given our belief vector. (b(s) * R(s,a)
-        - Calculate the new belief vector based on this action. (b^a)
-        - Go through every possible observation
-            - calculate the probability of this observation (P(o|s,a)). HOLD ON TO THIS
-            - calculate a new belief vector based on this operation.
-            - call this function at step 0, using our new belief vector and horizon - 1.
-        - Test to see if action is worth saving. If not, trash it.
+        - Calculate expected value of this action given our belief vector. (b(s) * R(s,a))
+    - For all observations:
+        - Calculate expected value of transitioning to this belief state. Aggregate.
+    - Maximize / only return the best action.
 
 License
 =======
