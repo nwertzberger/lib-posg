@@ -131,8 +131,8 @@ the edge. If generateStrategy is never called, it is automatically called when a
             - Update belief for this.
     - Normalize all action - observation combo beliefs.
     - Generate an easier to parse data structure. For all games:
-        - For all joint actions
-            -For all transitions:
+        - For all joint actions:
+            - For all transitions:
                  - For all observations:
                     - Calculate P(o|s')*P(s'|a,s)*b(s) to store in a map of observation ->
                       transition probabilities. *These are actually un-normalized belief
