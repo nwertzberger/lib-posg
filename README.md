@@ -66,6 +66,21 @@ the edge. If generateStrategy is never called, it is automatically called when a
         - Calculate expected value of transitioning to this belief state. Aggregate.
     - Maximize / only return the best action.
 
+Unfortunately, at this point, this algorithm does not accurately reflect the one defined
+in the paper. Specifically, we do no iterated removal of dominated strategies. We do, however,
+only hold on to the best strategy for the horizon given.
+
+Algorithm from the paper
+------------------------
+
+The paper discusses what appears to be an iterated depth-first search of the space, which includes
+pruning for dominated strategies at each depth. Based on my understanding of this, I would expect
+that such pruning would lead to premature removal of strategies that may lead to games where a higher
+payoff could be expected.
+
+
+
+
 Defining a Game
 ===============
 
