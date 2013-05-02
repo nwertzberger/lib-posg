@@ -78,9 +78,6 @@ pruning for dominated strategies at each depth. Based on my understanding of thi
 that such pruning would lead to premature removal of strategies that may lead to games where a higher
 payoff could be expected.
 
-
-
-
 Defining a Game
 ===============
 

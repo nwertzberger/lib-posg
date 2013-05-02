@@ -17,7 +17,7 @@ agents:
     agentHuman:
         discount: 0.9
         horizon: 3
-        actions: [ LEFT, RIGHT, SUCK ]
+        actions: [ LEFT, RIGHT, SUCK, SIT ]
         observations: [ DIRTY, BUMP ]
         belief:
             LD: 1.0
@@ -27,6 +27,13 @@ startingGame: LD
 games:
     # Clean states:
     LC:
+        -   jointAction: {agentHuman: SIT}
+            rewards: {agentHuman: 0.0}
+            transitions:
+                LC:
+                    p: 1.0
+                    observations:
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
         -   jointAction: {agentHuman: LEFT}
             rewards: {agentHuman: -0.1}
             transitions:
@@ -70,6 +77,13 @@ games:
                     p: 0.2
                     observations: 
                         agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
+        -   jointAction: {agentHuman: SIT}
+            rewards: {agentHuman: 0.0}
+            transitions:
+                RC:
+                    p: 1.0
+                    observations:
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
 
         -   jointAction: {agentHuman: RIGHT}
             rewards: {agentHuman: -0.1}
@@ -90,7 +104,6 @@ games:
                     p: 1.0 
                     observations:
                         agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
-
     # Dirty States:
     LD:
         -   jointAction: {agentHuman: LEFT}
@@ -104,6 +117,13 @@ games:
                     p: 0.2
                     observations: 
                         agentHuman: { BUMP: 0.2, DIRTY: 0.8 }
+        -   jointAction: {agentHuman: SIT}
+            rewards: {agentHuman: 0.0}
+            transitions:
+                LD:
+                    p: 1.0
+                    observations:
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.2 }
 
         -   jointAction: {agentHuman: RIGHT}
             rewards: {agentHuman: -0.1}
@@ -135,7 +155,7 @@ games:
                 RD:
                     p: 0.2
                     observations: 
-                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.8 }
 
         -   jointAction: {agentHuman: RIGHT}
             rewards: {agentHuman: -0.1}
@@ -147,10 +167,17 @@ games:
                 RD:
                     p: 0.8
                     observations: 
-                        agentHuman: { BUMP: 0.8, DIRTY: 0.2 }
+                        agentHuman: { BUMP: 0.8, DIRTY: 0.8 }
+        -   jointAction: {agentHuman: SIT}
+            rewards: {agentHuman: 0.0}
+            transitions:
+                RD:
+                    p: 1.0
+                    observations:
+                        agentHuman: { BUMP: 0.2, DIRTY: 0.8 }
 
         -   jointAction: {agentHuman: SUCK}
-            rewards: {agentHuman: 1.0}
+            rewards: {agentHuman: 2.0}
             transitions:
                 RD: 
                     p: 0.2 
